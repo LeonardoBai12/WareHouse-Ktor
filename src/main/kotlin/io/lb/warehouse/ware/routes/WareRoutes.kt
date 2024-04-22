@@ -15,99 +15,79 @@ import io.lb.warehouse.ware.data.service.WareDatabaseService
 import java.sql.Connection
 
 fun Application.wareRoutes(dbConnection: Connection) {
-    val taskService = WareDatabaseService(dbConnection)
+    val wareService = WareDatabaseService(dbConnection)
 
     routing {
-        post("/api/createTask") {
-            val task = call.receiveNullable<WareCreateRequest>() ?: run {
+        post("/api/createWare") {
+            val ware = call.receiveNullable<WareCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
 
-            try {
-                TaskType.valueOf(task.taskType)
-            } catch (e: Exception) {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    "Invalid task type, should be one of those: ${TaskType.values()}"
-                )
-                return@post
-            }
-
-            val id = taskService.insertTask(
-                task
+            val id = wareService.insertWare(
+                ware
             )
             call.respond(HttpStatusCode.Created, id)
         }
 
-        get("/api/task") {
+        get("/api/ware") {
             val id = call.parameters["id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            val task = taskService.getTaskById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no task with such ID")
+            val ware = wareService.getWareById(id) ?: run {
+                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
                 return@get
             }
-            call.respond(HttpStatusCode.OK, task)
+            call.respond(HttpStatusCode.OK, ware)
         }
 
-        get("/api/tasksByUser") {
+        get("/api/waresCreatedByUser") {
             try {
                 val userId = call.parameters["userId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val tasks = taskService.getTasksByUserId(userId)
-                call.respond(HttpStatusCode.OK, tasks)
+                val wares = wareService.getWaresByUserId(userId)
+                call.respond(HttpStatusCode.OK, wares)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No tasks for such user")
+                call.respond(HttpStatusCode.NotFound, "No wares for such user")
             }
         }
 
-        put("/api/updateTask") {
+        put("/api/updateWare") {
             val id = call.parameters["id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put
             }
 
-            taskService.getTaskById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no task with such ID")
+            wareService.getWareById(id) ?: run {
+                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
                 return@put
             }
 
-            val task = call.receiveNullable<WareCreateRequest>() ?: run {
+            val ware = call.receiveNullable<WareCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put
             }
 
-            try {
-                TaskType.valueOf(task.taskType)
-            } catch (e: Exception) {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    "Invalid task type, should be one of those: ${TaskType.values()}"
-                )
-                return@put
-            }
-
-            taskService.updateTask(id, task)
+            wareService.updateWare(id, ware)
             call.respond(HttpStatusCode.OK, id)
         }
 
-        delete("/api/deleteTask") {
+        delete("/api/deleteWare") {
             val id = call.parameters["id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
             }
 
-            taskService.getTaskById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no task with such ID")
+            wareService.getWareById(id) ?: run {
+                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
                 return@delete
             }
 
-            taskService.deleteTask(id)
-            call.respond(HttpStatusCode.OK, "Task deleted successfully")
+            wareService.deleteWare(id)
+            call.respond(HttpStatusCode.OK, "Ware deleted successfully")
         }
     }
 }

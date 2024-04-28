@@ -4,7 +4,7 @@ data class WareCreateRequest(
     val userId: String,
     val name: String,
     val description: String?,
-    val weightPerUnit: Double?,
+    val weightPerUnit: Double,
     val weightUnit: String?,
     val totalQuantity: Double = 0.0,
     val availableQuantity: Double = 0.0,

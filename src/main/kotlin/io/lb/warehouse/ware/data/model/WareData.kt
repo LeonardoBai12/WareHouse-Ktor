@@ -10,7 +10,6 @@ data class WareData(
     val description: String?,
     val weightPerUnit: Double,
     val weightUnit: String?,
-    val totalQuantity: Double = 0.0,
     val availableQuantity: Double = 0.0,
     val quantityUnit: String?,
     val wareLocation: String,

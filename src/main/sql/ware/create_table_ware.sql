@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS ware (
     description TEXT,
     weight_per_unit DOUBLE PRECISION,
     weight_unit VARCHAR(50),
-    total_quantity DOUBLE PRECISION DEFAULT 0.0,
     available_quantity DOUBLE PRECISION DEFAULT 0.0,
     quantity_unit VARCHAR(50),
     ware_location VARCHAR(255) NOT NULL,

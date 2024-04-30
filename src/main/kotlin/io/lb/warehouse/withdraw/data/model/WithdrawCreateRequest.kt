@@ -4,6 +4,5 @@ data class WithdrawCreateRequest(
     val uuid: String,
     val userId: String,
     val wareId: String,
-    val quantity: String,
-    val date: String,
+    val quantity: Double
 )

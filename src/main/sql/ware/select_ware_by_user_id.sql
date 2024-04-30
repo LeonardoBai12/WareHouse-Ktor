@@ -1,5 +1,5 @@
 SELECT
-    user_id,
+    uuid,
     name,
     description,
     weight_per_unit,

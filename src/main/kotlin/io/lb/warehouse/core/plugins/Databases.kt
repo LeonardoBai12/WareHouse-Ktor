@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.Application
 import io.lb.warehouse.ware.routes.wareRoutes
 import io.lb.warehouse.user.routes.userRoutes
+import io.lb.warehouse.withdraw.routes.withdrawRoutes
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -12,6 +13,7 @@ fun Application.configureDatabases() {
     val dbConnection = connectToPostgres(embedded = true).connection
     userRoutes(dbConnection)
     wareRoutes(dbConnection)
+    withdrawRoutes(dbConnection)
 }
 
 fun Application.connectToPostgres(embedded: Boolean): HikariDataSource {

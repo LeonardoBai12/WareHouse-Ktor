@@ -1,6 +1,6 @@
 SELECT
     user_id,
     ware_id,
-    quantity,
+    quantity
 FROM withdraw
 WHERE uuid = ?;

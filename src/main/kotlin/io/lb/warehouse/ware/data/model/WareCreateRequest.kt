@@ -1,5 +1,8 @@
 package io.lb.warehouse.ware.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WareCreateRequest(
     val userId: String,
     val name: String,

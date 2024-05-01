@@ -11,6 +11,7 @@ import io.ktor.server.routing.routing
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
 import java.sql.Connection
+import java.sql.SQLException
 
 fun Application.withdrawRoutes(dbConnection: Connection) {
     val wareService = WithdrawDatabaseService(dbConnection)
@@ -22,8 +23,13 @@ fun Application.withdrawRoutes(dbConnection: Connection) {
                 return@post
             }
 
-            val id = wareService.insertWithdraw(withdraw)
-            call.respond(HttpStatusCode.Created, id)
+            try {
+                val id = wareService.insertWithdraw(withdraw)
+                call.respond(HttpStatusCode.Created, id)
+            } catch (e: SQLException) {
+                call.respond(HttpStatusCode.Forbidden, e.localizedMessage)
+                return@post
+            }
         }
 
         get("/api/withdraw") {
@@ -51,13 +57,13 @@ fun Application.withdrawRoutes(dbConnection: Connection) {
             }
         }
 
-        get("/api/withdrawsCreatedByWare") {
+        get("/api/withdrawsByWareId") {
             try {
                 val userId = call.parameters["wareId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val wares = wareService.getWithdrawsByUserId(userId)
+                val wares = wareService.getWithdrawsByWareId(userId)
                 call.respond(HttpStatusCode.OK, wares)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No withdraws for such ware")

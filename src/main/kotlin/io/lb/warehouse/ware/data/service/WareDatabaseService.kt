@@ -7,19 +7,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
 import java.sql.Statement
-import java.time.LocalDate
-import java.time.LocalTime
 import java.util.UUID
-import jdk.jfr.internal.SecuritySupport.getResourceAsStream
 
 class WareDatabaseService(private val connection: Connection) {
     companion object {
-        private const val CREATE_TABLE_WARE = "create_table_ware.sql"
-        private const val DELETE_WARE = "delete_ware.sql"
-        private const val INSERT_WARE = "insert_ware.sql"
-        private const val SELECT_WARE_BY_ID = "select_ware_by_id.sql"
-        private const val SELECT_WARES_BY_USER_ID = "select_ware_by_user_id.sql"
-        private const val UPDATE_WARE = "update_ware.sql"
+        private const val CREATE_TABLE_WARE = "ware/create_table_ware.sql"
+        private const val DELETE_WARE = "ware/delete_ware.sql"
+        private const val INSERT_WARE = "ware/insert_ware.sql"
+        private const val SELECT_WARE_BY_ID = "ware/select_ware_by_id.sql"
+        private const val SELECT_WARES_BY_USER_ID = "ware/select_ware_by_user_id.sql"
+        private const val UPDATE_WARE = "ware/update_ware.sql"
     }
 
     init {
@@ -35,8 +32,8 @@ class WareDatabaseService(private val connection: Connection) {
 
         with(statement) {
             setObject(1, UUID.randomUUID())
-            setString(2, ware.name)
-            setObject(3, UUID.fromString(ware.userId))
+            setObject(2, UUID.fromString(ware.userId))
+            setString(3, ware.name)
             setString(4, ware.description)
             setDouble(5, ware.weightPerUnit)
             setString(6, ware.weightUnit)
@@ -97,7 +94,6 @@ class WareDatabaseService(private val connection: Connection) {
 
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
-            val userId = resultSet.getString("user_id")
             val name = resultSet.getString("name")
             val description = resultSet.getString("description")
             val weightPerUnit = resultSet.getDouble("weight_per_unit")
@@ -109,7 +105,7 @@ class WareDatabaseService(private val connection: Connection) {
             wares.add(
                 WareData(
                     uuid = id,
-                    userId = userId,
+                    userId = userUUID,
                     name = name,
                     description = description,
                     weightPerUnit = weightPerUnit,

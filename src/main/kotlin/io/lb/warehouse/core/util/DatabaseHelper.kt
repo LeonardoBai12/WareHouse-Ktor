@@ -1,8 +1,11 @@
 package io.lb.warehouse.core.util
 
-import jdk.jfr.internal.SecuritySupport
+import java.io.File
 
-fun loadQueryFromFile(fileName: String): String? {
-    val inputStream = SecuritySupport.getResourceAsStream("app/src/main/sql/$fileName")
-    return inputStream?.bufferedReader().use { it?.readText() }
+fun loadQueryFromFile(fileName: String): String {
+    val projectDir = System.getProperty("user.dir")
+    val sqlDir = File("$projectDir/src/main/sql")
+    val file = File(sqlDir, fileName)
+
+    return file.bufferedReader().use { it.readText() }
 }

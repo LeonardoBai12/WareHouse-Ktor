@@ -6,7 +6,7 @@ BEGIN
     END IF;
 
     UPDATE ware
-    SET available_quantity = GREATEST(total_quantity, 0)
+    SET available_quantity = available_quantity - NEW.quantity
     WHERE uuid = NEW.ware_id;
 
     RETURN NEW;

@@ -13,6 +13,7 @@ import io.ktor.server.routing.routing
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.service.WareDatabaseService
 import java.sql.Connection
+import java.sql.SQLException
 
 fun Application.wareRoutes(dbConnection: Connection) {
     val wareService = WareDatabaseService(dbConnection)
@@ -24,10 +25,13 @@ fun Application.wareRoutes(dbConnection: Connection) {
                 return@post
             }
 
-            val id = wareService.insertWare(
-                ware
-            )
-            call.respond(HttpStatusCode.Created, id)
+            try {
+                val id = wareService.insertWare(ware)
+                call.respond(HttpStatusCode.Created, id)
+            } catch (e: SQLException) {
+                call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                return@post
+            }
         }
 
         get("/api/ware") {
@@ -71,8 +75,13 @@ fun Application.wareRoutes(dbConnection: Connection) {
                 return@put
             }
 
-            wareService.updateWare(id, ware)
-            call.respond(HttpStatusCode.OK, id)
+            try {
+                wareService.updateWare(id, ware)
+                call.respond(HttpStatusCode.OK, id)
+            } catch (e: SQLException) {
+                call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                return@put
+            }
         }
 
         delete("/api/deleteWare") {

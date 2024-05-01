@@ -11,13 +11,13 @@ import java.util.UUID
 
 class WithdrawDatabaseService(private val connection: Connection) {
     companion object {
-        private const val CREATE_AFTER_WITHDRAW_TRIGGER = "create_after_withdraw_trigger.sql"
-        private const val CREATE_UPDATE_QUANTITY_FUNCTION = "create_update_available_quantity_function.sql"
-        private const val CREATE_TABLE_WITHDRAW = "create_table_withdraw.sql"
-        private const val INSERT_WITHDRAW = "insert_withdraw.sql"
-        private const val SELECT_WITHDRAW_BY_ID = "select_withdraw_by_id.sql"
-        private const val SELECT_WITHDRAWS_BY_USER_ID = "select_withdraw_by_user_id.sql"
-        private const val SELECT_WITHDRAWS_BY_WARE_ID = "select_withdraw_by_ware_id.sql"
+        private const val CREATE_AFTER_WITHDRAW_TRIGGER = "withdraw/create_after_withdraw_trigger.sql"
+        private const val CREATE_UPDATE_QUANTITY_FUNCTION = "withdraw/create_update_available_quantity_function.sql"
+        private const val CREATE_TABLE_WITHDRAW = "withdraw/create_table_withdraw.sql"
+        private const val INSERT_WITHDRAW = "withdraw/insert_withdraw.sql"
+        private const val SELECT_WITHDRAW_BY_ID = "withdraw/select_withdraw_by_id.sql"
+        private const val SELECT_WITHDRAWS_BY_USER_ID = "withdraw/select_withdraw_by_user_id.sql"
+        private const val SELECT_WITHDRAWS_BY_WARE_ID = "withdraw/select_withdraw_by_ware_id.sql"
     }
 
     init {
@@ -38,6 +38,7 @@ class WithdrawDatabaseService(private val connection: Connection) {
             setObject(2, UUID.fromString(withdraw.userId))
             setObject(3, UUID.fromString(withdraw.wareId))
             setDouble(4, withdraw.quantity)
+
             executeUpdate()
         }
 
@@ -82,14 +83,13 @@ class WithdrawDatabaseService(private val connection: Connection) {
 
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
-            val userId = resultSet.getString("user_id")
             val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
 
             withdraws.add(
                 WithdrawData(
                     uuid = id,
-                    userId = userId,
+                    userId = userUUID,
                     wareId = wareId,
                     quantity = quantity,
                 )
@@ -110,14 +110,13 @@ class WithdrawDatabaseService(private val connection: Connection) {
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
             val userId = resultSet.getString("user_id")
-            val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
 
             withdraws.add(
                 WithdrawData(
                     uuid = id,
                     userId = userId,
-                    wareId = wareId,
+                    wareId = wareUUID,
                     quantity = quantity
                 )
             )

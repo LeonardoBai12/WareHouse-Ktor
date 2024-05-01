@@ -11,12 +11,12 @@ class UserDatabaseService(
     private val connection: Connection,
 ) {
     companion object {
-        private const val CREATE_TABLE_USER_DATA = "create_table_user.sql"
-        private const val DELETE_USER = "delete_user.sql"
-        private const val INSERT_USER = "insert_user.sql"
-        private const val SELECT_USER_BY_EMAIL = "select_user_by_email.sql"
-        private const val SELECT_USER_BY_ID = "select_user_by_id.sql"
-        private const val UPDATE_USER = "update_user.sql"
+        private const val CREATE_TABLE_USER_DATA = "user/create_table_user.sql"
+        private const val DELETE_USER = "user/delete_user.sql"
+        private const val INSERT_USER = "user/insert_user.sql"
+        private const val SELECT_USER_BY_EMAIL = "user/select_user_by_email.sql"
+        private const val SELECT_USER_BY_ID = "user/select_user_by_id.sql"
+        private const val UPDATE_USER = "user/update_user.sql"
     }
 
     init {

@@ -2,6 +2,7 @@ INSERT INTO ware (
     uuid,
     user_id,
     name,
+    brand,
     description,
     weight_per_unit,
     weight_unit,
@@ -12,6 +13,7 @@ INSERT INTO ware (
     ?, -- uuid
     ?, -- user_id
     ?, -- name
+    ?, -- brand
     ?, -- description
     ?, -- weight_per_unit
     ?, -- weight_unit

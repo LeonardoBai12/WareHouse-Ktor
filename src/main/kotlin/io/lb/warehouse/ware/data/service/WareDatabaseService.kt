@@ -34,12 +34,13 @@ class WareDatabaseService(private val connection: Connection) {
             setObject(1, UUID.randomUUID())
             setObject(2, UUID.fromString(ware.userId))
             setString(3, ware.name)
-            setString(4, ware.description)
-            setDouble(5, ware.weightPerUnit)
-            setString(6, ware.weightUnit)
-            setDouble(7, ware.availableQuantity)
-            setString(8, ware.quantityUnit)
-            setString(9, ware.wareLocation)
+            setString(4, ware.brand)
+            setString(5, ware.description)
+            setDouble(6, ware.weightPerUnit)
+            setString(7, ware.weightUnit)
+            setDouble(8, ware.availableQuantity)
+            setString(9, ware.quantityUnit)
+            setString(10, ware.wareLocation)
             executeUpdate()
         }
 
@@ -62,6 +63,7 @@ class WareDatabaseService(private val connection: Connection) {
             val userId = resultSet.getString("user_id")
             val name = resultSet.getString("name")
             val description = resultSet.getString("description")
+            val brand = resultSet.getString("brand")
             val weightPerUnit = resultSet.getDouble("weight_per_unit")
             val weightUnit = resultSet.getString("weight_unit")
             val availableQuantity = resultSet.getDouble("available_quantity")
@@ -72,6 +74,7 @@ class WareDatabaseService(private val connection: Connection) {
                 uuid = id,
                 userId = userId,
                 name = name,
+                brand = brand,
                 description = description,
                 weightPerUnit = weightPerUnit,
                 weightUnit = weightUnit,
@@ -95,6 +98,7 @@ class WareDatabaseService(private val connection: Connection) {
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
             val name = resultSet.getString("name")
+            val brand = resultSet.getString("brand")
             val description = resultSet.getString("description")
             val weightPerUnit = resultSet.getDouble("weight_per_unit")
             val weightUnit = resultSet.getString("weight_unit")
@@ -107,6 +111,7 @@ class WareDatabaseService(private val connection: Connection) {
                     uuid = id,
                     userId = userUUID,
                     name = name,
+                    brand = brand,
                     description = description,
                     weightPerUnit = weightPerUnit,
                     weightUnit = weightUnit,
@@ -123,13 +128,14 @@ class WareDatabaseService(private val connection: Connection) {
     suspend fun updateWare(id: String, ware: WareCreateRequest) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_WARE))) {
             setString(1, ware.name)
-            setString(2, ware.description)
-            setDouble(3, ware.weightPerUnit)
-            setString(4, ware.weightUnit)
-            setDouble(5, ware.availableQuantity)
-            setString(6, ware.quantityUnit)
-            setString(7, ware.wareLocation)
-            setObject(8, UUID.fromString(id))
+            setString(2, ware.brand)
+            setString(3, ware.description)
+            setDouble(4, ware.weightPerUnit)
+            setString(5, ware.weightUnit)
+            setDouble(6, ware.availableQuantity)
+            setString(7, ware.quantityUnit)
+            setString(8, ware.wareLocation)
+            setObject(9, UUID.fromString(id))
             executeUpdate()
         }
     }

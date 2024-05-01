@@ -7,7 +7,7 @@ data class WareData(
     val uuid: String,
     val userId: String,
     val name: String,
-    val brand: String,
+    val brand: String?,
     val description: String?,
     val weightPerUnit: Double,
     val weightUnit: String?,

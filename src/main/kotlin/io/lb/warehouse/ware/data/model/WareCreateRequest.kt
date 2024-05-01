@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class WareCreateRequest(
     val userId: String,
     val name: String,
-    val brand: String,
+    val brand: String?,
     val description: String?,
     val weightPerUnit: Double,
     val weightUnit: String?,

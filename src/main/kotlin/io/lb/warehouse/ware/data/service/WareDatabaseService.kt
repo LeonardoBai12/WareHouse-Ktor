@@ -133,9 +133,8 @@ class WareDatabaseService(private val connection: Connection) {
             setDouble(4, ware.weightPerUnit)
             setString(5, ware.weightUnit)
             setDouble(6, ware.availableQuantity)
-            setString(7, ware.quantityUnit)
-            setString(8, ware.wareLocation)
-            setObject(9, UUID.fromString(id))
+            setString(8, ware.quantityUnit)
+            setString(9, ware.wareLocation)
             executeUpdate()
         }
     }

@@ -10,11 +10,11 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
+import io.lb.warehouse.core.extensions.encrypt
+import io.lb.warehouse.core.extensions.passwordCheck
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
-import io.lb.warehouse.core.extensions.encrypt
-import io.lb.warehouse.core.extensions.passwordCheck
 import java.sql.Connection
 
 fun Application.userRoutes(dbConnection: Connection) {

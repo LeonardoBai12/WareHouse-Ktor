@@ -1,4 +1,4 @@
-package io.lb.warehouse.withdraw.routes
+package io.lb.warehouse.deposit.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -8,23 +8,23 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
+import io.lb.warehouse.deposit.data.model.DepositCreateRequest
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import java.sql.Connection
 import java.sql.SQLException
 
-fun Application.withdrawRoutes(dbConnection: Connection) {
-    val withdrawService = WithdrawDatabaseService(dbConnection)
+fun Application.depositRoutes(dbConnection: Connection) {
+    val depositService = DepositDatabaseService(dbConnection)
 
     routing {
-        post("/api/createWithdraw") {
-            val withdraw = call.receiveNullable<WithdrawCreateRequest>() ?: run {
+        post("/api/createDeposit") {
+            val deposit = call.receiveNullable<DepositCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
 
             try {
-                val id = withdrawService.insertWithdraw(withdraw)
+                val id = depositService.insertDeposit(deposit)
                 call.respond(HttpStatusCode.Created, id)
             } catch (e: SQLException) {
                 call.respond(HttpStatusCode.Forbidden, e.localizedMessage)
@@ -32,41 +32,41 @@ fun Application.withdrawRoutes(dbConnection: Connection) {
             }
         }
 
-        get("/api/withdraw") {
+        get("/api/deposit") {
             val id = call.parameters["id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            val withdraw = withdrawService.getWithdrawById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no withdraws with such ID")
+            val deposit = depositService.getDepositById(id) ?: run {
+                call.respond(HttpStatusCode.NotFound, "There is no deposits with such ID")
                 return@get
             }
-            call.respond(HttpStatusCode.OK, withdraw)
+            call.respond(HttpStatusCode.OK, deposit)
         }
 
-        get("/api/withdrawsCreatedByUser") {
+        get("/api/depositsCreatedByUser") {
             try {
                 val userId = call.parameters["userId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val withdraws = withdrawService.getWithdrawsByUserId(userId)
-                call.respond(HttpStatusCode.OK, withdraws)
+                val deposits = depositService.getDepositsByUserId(userId)
+                call.respond(HttpStatusCode.OK, deposits)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                call.respond(HttpStatusCode.NotFound, "No deposits for such user")
             }
         }
 
-        get("/api/withdrawsByWareId") {
+        get("/api/depositsByWareId") {
             try {
                 val userId = call.parameters["wareId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val withdraws = withdrawService.getWithdrawsByWareId(userId)
-                call.respond(HttpStatusCode.OK, withdraws)
+                val deposits = depositService.getDepositsByWareId(userId)
+                call.respond(HttpStatusCode.OK, deposits)
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No withdraws for such ware")
+                call.respond(HttpStatusCode.NotFound, "No deposits for such ware")
             }
         }
     }

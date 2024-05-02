@@ -3,6 +3,7 @@ package io.lb.warehouse.core.plugins
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.Application
+import io.lb.warehouse.deposit.routes.depositRoutes
 import io.lb.warehouse.user.routes.userRoutes
 import io.lb.warehouse.ware.routes.wareRoutes
 import io.lb.warehouse.withdraw.routes.withdrawRoutes
@@ -14,6 +15,7 @@ fun Application.configureDatabases() {
     userRoutes(dbConnection)
     wareRoutes(dbConnection)
     withdrawRoutes(dbConnection)
+    depositRoutes(dbConnection)
 }
 
 fun Application.connectToPostgres(embedded: Boolean): HikariDataSource {

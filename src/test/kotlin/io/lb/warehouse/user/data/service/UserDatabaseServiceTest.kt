@@ -2,6 +2,7 @@ package io.lb.warehouse.user.data.service
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.ktor.client.request.delete
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -13,6 +14,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.gson.gson
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.user.data.model.UserData
@@ -33,14 +35,7 @@ class UserDatabaseServiceTest {
 
     @Test
     fun `Creating user with an email already in use, should return Conflict`() = testApplication {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns true
 
@@ -63,14 +58,7 @@ class UserDatabaseServiceTest {
 
     @Test
     fun `Creating user with typos, should return BadRequest`() = testApplication {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         val response = client.post("/api/createUser") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -91,14 +79,7 @@ class UserDatabaseServiceTest {
 
     @Test
     fun `Creating user correctly, should return Created`() = testApplication {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.createUser(any()) } returns 1
@@ -123,15 +104,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating unexistent user, should return NotFound`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.getUserById(uuid) } returns null
 
@@ -155,14 +128,7 @@ class UserDatabaseServiceTest {
 
     @Test
     fun `Updating without id param, should return BadRequest`() = testApplication {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         val response = client.put("/api/updateUser") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -184,15 +150,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating user with an email already in use, should return Conflict`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns true
         coEvery { service.getUserById(uuid) } returns UserData(
@@ -223,15 +181,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating user with wrong password, should return Unauthorized`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.getUserById(uuid) } returns UserData(
@@ -262,15 +212,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating user with no password, should return Unauthorized`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.getUserById(uuid) } returns UserData(
@@ -301,15 +243,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating user with typos, should return BadRequest`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.getUserById(uuid) } returns UserData(
@@ -340,15 +274,7 @@ class UserDatabaseServiceTest {
     @Test
     fun `Updating user correctly, should return OK`() = testApplication {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
-
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
-        }
+        setup()
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.getUserById(uuid) } returns UserData(
@@ -375,5 +301,63 @@ class UserDatabaseServiceTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Deleting with no id param, should return BadRequesst`() = testApplication {
+        setup()
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+    }
+
+    @Test
+    fun `Deleting unexistent user, should return NotFound`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns null
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+    }
+
+    @Test
+    fun `Deleting user correctly, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+        coEvery { service.deleteUser(any()) } returns 1
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    private fun ApplicationTestBuilder.setup() {
+        install(ContentNegotiation) {
+            json()
+            gson {
+            }
+        }
+        application {
+            userRoutes(service)
+        }
     }
 }

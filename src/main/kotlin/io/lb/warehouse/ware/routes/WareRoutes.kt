@@ -50,6 +50,12 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                     return@get
                 }
                 val wares = wareService.getWaresByUserId(userId)
+
+                if (wares.isEmpty()) {
+                    call.respond(HttpStatusCode.NotFound, "No wares for such user")
+                    return@get
+                }
+
                 call.respond(HttpStatusCode.OK, wares)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No wares for such user")

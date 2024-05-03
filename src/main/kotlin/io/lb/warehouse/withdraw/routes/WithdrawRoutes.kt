@@ -48,6 +48,12 @@ fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
                     return@get
                 }
                 val withdraws = withdrawService.getWithdrawsByUserId(userId)
+
+                if (withdraws.isEmpty()) {
+                    call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                    return@get
+                }
+
                 call.respond(HttpStatusCode.OK, withdraws)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
@@ -56,11 +62,17 @@ fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
 
         get("/api/withdrawsByWareId") {
             try {
-                val userId = call.parameters["wareId"] ?: run {
+                val wareId = call.parameters["wareId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val withdraws = withdrawService.getWithdrawsByWareId(userId)
+                val withdraws = withdrawService.getWithdrawsByWareId(wareId)
+
+                if (withdraws.isEmpty()) {
+                    call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                    return@get
+                }
+
                 call.respond(HttpStatusCode.OK, withdraws)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No withdraws for such ware")

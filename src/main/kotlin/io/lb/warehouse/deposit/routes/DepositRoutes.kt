@@ -48,6 +48,12 @@ fun Application.depositRoutes(depositService: DepositDatabaseService) {
                     return@get
                 }
                 val deposits = depositService.getDepositsByUserId(userId)
+
+                if (deposits.isEmpty()) {
+                    call.respond(HttpStatusCode.NotFound, "No deposits for such ware")
+                    return@get
+                }
+
                 call.respond(HttpStatusCode.OK, deposits)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No deposits for such user")
@@ -56,11 +62,17 @@ fun Application.depositRoutes(depositService: DepositDatabaseService) {
 
         get("/api/depositsByWareId") {
             try {
-                val userId = call.parameters["wareId"] ?: run {
+                val wareId = call.parameters["wareId"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val deposits = depositService.getDepositsByWareId(userId)
+                val deposits = depositService.getDepositsByWareId(wareId)
+
+                if (deposits.isEmpty()) {
+                    call.respond(HttpStatusCode.NotFound, "No deposits for such ware")
+                    return@get
+                }
+
                 call.respond(HttpStatusCode.OK, deposits)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound, "No deposits for such ware")

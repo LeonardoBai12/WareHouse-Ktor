@@ -64,7 +64,7 @@ class WareRoutesTest {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup()
 
-        coEvery { service.insertWare(any()) } returns uuid
+        coEvery { service.insertWare(any()) } returns 1
 
         val response = client.post("/api/createWare") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

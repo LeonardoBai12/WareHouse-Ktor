@@ -36,7 +36,7 @@ class DepositDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_DEPOSIT_TRIGGER))
     }
 
-    suspend fun insertDeposit(deposit: DepositCreateRequest): String = withContext(Dispatchers.IO) {
+    suspend fun insertDeposit(deposit: DepositCreateRequest): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_DEPOSIT),
             Statement.RETURN_GENERATED_KEYS
@@ -49,13 +49,6 @@ class DepositDatabaseService(private val connection: Connection) {
             setDouble(4, deposit.quantity)
 
             executeUpdate()
-        }
-
-        val generatedKeys = statement.generatedKeys
-        if (generatedKeys.next()) {
-            return@withContext generatedKeys.getString(1)
-        } else {
-            throw Exception("Unable to retrieve the id of the newly inserted deposit.")
         }
     }
 

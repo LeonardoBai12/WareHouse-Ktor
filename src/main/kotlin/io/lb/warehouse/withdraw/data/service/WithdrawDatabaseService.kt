@@ -36,7 +36,7 @@ class WithdrawDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_WITHDRAW_TRIGGER))
     }
 
-    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): String = withContext(Dispatchers.IO) {
+    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WITHDRAW),
             Statement.RETURN_GENERATED_KEYS
@@ -49,13 +49,6 @@ class WithdrawDatabaseService(private val connection: Connection) {
             setDouble(4, withdraw.quantity)
 
             executeUpdate()
-        }
-
-        val generatedKeys = statement.generatedKeys
-        if (generatedKeys.next()) {
-            return@withContext generatedKeys.getString(1)
-        } else {
-            throw Exception("Unable to retrieve the id of the newly inserted withdraw.")
         }
     }
 

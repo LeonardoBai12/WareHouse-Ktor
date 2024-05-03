@@ -31,7 +31,7 @@ class WareDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_WARE))
     }
 
-    suspend fun insertWare(ware: WareCreateRequest): String = withContext(Dispatchers.IO) {
+    suspend fun insertWare(ware: WareCreateRequest): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WARE),
             Statement.RETURN_GENERATED_KEYS
@@ -49,13 +49,6 @@ class WareDatabaseService(private val connection: Connection) {
             setString(9, ware.quantityUnit)
             setString(10, ware.wareLocation)
             executeUpdate()
-        }
-
-        val generatedKeys = statement.generatedKeys
-        if (generatedKeys.next()) {
-            return@withContext generatedKeys.getString(1)
-        } else {
-            throw Exception("Unable to retrieve the id of the newly inserted ware.")
         }
     }
 

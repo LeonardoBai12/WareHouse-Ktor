@@ -15,8 +15,8 @@ import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WA
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARE_BY_ID
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.UPDATE_WARE
 import io.mockk.every
-import io.mockk.mockkStatic
 import io.mockk.verify
+import java.sql.Statement
 import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -123,7 +123,6 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
 
     @Test
     fun `Creating ware, should run succesfully`() = runTest {
-        val uuid = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         val ware = WareCreateRequest(
             userId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc",
             name = "nameValue",
@@ -137,14 +136,13 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
         )
 
         every {
-            connection.prepareStatement(loadQueryFromFile(INSERT_WARE))
+            connection.prepareStatement(loadQueryFromFile(INSERT_WARE), Statement.RETURN_GENERATED_KEYS)
         } returns preparedStatement
 
         service.insertWare(ware)
 
         verify {
-            connection.prepareStatement(loadQueryFromFile(INSERT_WARE))
-            preparedStatement.setObject(1, UUID.fromString(uuid))
+            connection.prepareStatement(loadQueryFromFile(INSERT_WARE), Statement.RETURN_GENERATED_KEYS)
             preparedStatement.setObject(2, UUID.fromString(ware.userId))
             preparedStatement.setString(3, "nameValue")
             preparedStatement.setString(4, "brandValue")
@@ -168,7 +166,6 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
             description = "descriptionValue",
             weightPerUnit = 5.0,
             weightUnit = "weightUnitValue",
-            availableQuantity = 500.0,
             quantityUnit = "quantityUnitValue",
             wareLocation = "wareLocationValue",
         )
@@ -186,7 +183,7 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
             preparedStatement.setString(3, "descriptionValue")
             preparedStatement.setDouble(4, 5.0)
             preparedStatement.setString(5, "weightUnitValue")
-            preparedStatement.setDouble(6, 500.0)
+            preparedStatement.setString(6, "quantityUnitValue")
             preparedStatement.setString(7, "wareLocationValue")
             preparedStatement.setObject(8, UUID.fromString(uuid))
             preparedStatement.executeUpdate()

@@ -56,7 +56,7 @@ class DepositRoutesTest {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup()
 
-        coEvery { service.insertDeposit(any()) } returns uuid
+        coEvery { service.insertDeposit(any()) } returns 1
 
         val response = client.post("/api/createDeposit") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

@@ -12,12 +12,9 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.service.WareDatabaseService
-import java.sql.Connection
 import java.sql.SQLException
 
-fun Application.wareRoutes(dbConnection: Connection) {
-    val wareService = WareDatabaseService(dbConnection)
-
+fun Application.wareRoutes(wareService: WareDatabaseService) {
     routing {
         post("/api/createWare") {
             val ware = call.receiveNullable<WareCreateRequest>() ?: run {

@@ -10,12 +10,9 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService
-import java.sql.Connection
 import java.sql.SQLException
 
-fun Application.depositRoutes(dbConnection: Connection) {
-    val depositService = DepositDatabaseService(dbConnection)
-
+fun Application.depositRoutes(depositService: DepositDatabaseService) {
     routing {
         post("/api/createDeposit") {
             val deposit = call.receiveNullable<DepositCreateRequest>() ?: run {

@@ -10,12 +10,9 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
-import java.sql.Connection
 import java.sql.SQLException
 
-fun Application.withdrawRoutes(dbConnection: Connection) {
-    val withdrawService = WithdrawDatabaseService(dbConnection)
-
+fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
     routing {
         post("/api/createWithdraw") {
             val withdraw = call.receiveNullable<WithdrawCreateRequest>() ?: run {

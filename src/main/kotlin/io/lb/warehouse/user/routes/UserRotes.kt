@@ -15,11 +15,8 @@ import io.lb.warehouse.core.extensions.passwordCheck
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
-import java.sql.Connection
 
-fun Application.userRoutes(dbConnection: Connection) {
-    val userService = UserDatabaseService(dbConnection)
-
+fun Application.userRoutes(userService: UserDatabaseService) {
     routing {
         post("/api/createUser") {
             val user = call.receiveNullable<UserCreateRequest>() ?: run {
@@ -70,6 +67,11 @@ fun Application.userRoutes(dbConnection: Connection) {
 
             if (userService.isEmailAlreadyInUse(user.email)) {
                 call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
+                return@put
+            }
+
+            user.password.takeIf { it.isEmpty() }?.let {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
                 return@put
             }
 

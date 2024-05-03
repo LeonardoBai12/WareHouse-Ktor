@@ -6,17 +6,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.sql.Connection
 import java.util.UUID
+import org.jetbrains.annotations.VisibleForTesting
 
 class UserDatabaseService(
     private val connection: Connection,
 ) {
     companion object {
-        private const val CREATE_TABLE_USER_DATA = "user/create_table_user.sql"
-        private const val DELETE_USER = "user/delete_user.sql"
-        private const val INSERT_USER = "user/insert_user.sql"
-        private const val SELECT_USER_BY_EMAIL = "user/select_user_by_email.sql"
-        private const val SELECT_USER_BY_ID = "user/select_user_by_id.sql"
-        private const val UPDATE_USER = "user/update_user.sql"
+        @VisibleForTesting
+        const val CREATE_TABLE_USER_DATA = "user/create_table_user.sql"
+        @VisibleForTesting
+        const val DELETE_USER = "user/delete_user.sql"
+        @VisibleForTesting
+        const val INSERT_USER = "user/insert_user.sql"
+        @VisibleForTesting
+        const val SELECT_USER_BY_EMAIL = "user/select_user_by_email.sql"
+        @VisibleForTesting
+        const val SELECT_USER_BY_ID = "user/select_user_by_id.sql"
+        @VisibleForTesting
+        const val UPDATE_USER = "user/update_user.sql"
     }
 
     init {

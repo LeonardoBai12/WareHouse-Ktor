@@ -98,7 +98,6 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
         assertThat(result?.availableQuantity).isEqualTo(500.0)
         assertThat(result?.quantityUnit).isEqualTo("quantity_unit_value")
         assertThat(result?.wareLocation).isEqualTo("ware_location_value")
-
     }
 
     @Test

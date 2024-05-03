@@ -3,6 +3,7 @@ package io.lb.warehouse.user.data.service
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.request.delete
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -343,6 +344,52 @@ class UserDatabaseServiceTest {
         coEvery { service.deleteUser(any()) } returns 1
 
         val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting with no id param, should return BadRequesst`() = testApplication {
+        setup()
+
+        val response = client.get("/api/user") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+    }
+
+    @Test
+    fun `Getting unexistent user, should return NotFound`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns null
+
+        val response = client.get("/api/user") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+    }
+
+    @Test
+    fun `Getting user correctly, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.get("/api/user") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             parameter("userId", uuid)
         }

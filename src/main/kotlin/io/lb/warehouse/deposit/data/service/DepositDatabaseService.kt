@@ -5,10 +5,10 @@ import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.model.DepositData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
-import org.jetbrains.annotations.VisibleForTesting
 
 class DepositDatabaseService(private val connection: Connection) {
     companion object {

@@ -1,4 +1,4 @@
-package io.lb.withdrawhouse.withdraw.routes
+package io.lb.warehouse.withdraw.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -17,7 +17,6 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.withdraw.data.model.WithdrawData
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
-import io.lb.warehouse.withdraw.routes.withdrawRoutes
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -54,9 +53,7 @@ class WithdrawRoutesTest {
 
     @Test
     fun `Creating withdraw correctly, should return Created`() = testApplication {
-        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup()
-
         coEvery { service.insertWithdraw(any()) } returns 1
 
         val response = client.post("/api/createWithdraw") {
@@ -112,7 +109,7 @@ class WithdrawRoutesTest {
         coEvery { service.getWithdrawById(uuid) } returns WithdrawData(
             uuid = uuid,
             quantity = 500.0,
-            userId=  userId,
+            userId = userId,
             wareId = wareId,
         )
 
@@ -162,7 +159,7 @@ class WithdrawRoutesTest {
             WithdrawData(
                 uuid = uuid,
                 quantity = 500.0,
-                userId=  userId,
+                userId = userId,
                 wareId = wareId,
             )
         )
@@ -213,7 +210,7 @@ class WithdrawRoutesTest {
             WithdrawData(
                 uuid = uuid,
                 quantity = 500.0,
-                userId=  userId,
+                userId = userId,
                 wareId = wareId,
             )
         )

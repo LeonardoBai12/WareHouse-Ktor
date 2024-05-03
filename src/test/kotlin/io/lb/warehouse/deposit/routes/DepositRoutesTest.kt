@@ -15,8 +15,8 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import io.lb.warehouse.deposit.data.model.DepositData
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -53,9 +53,7 @@ class DepositRoutesTest {
 
     @Test
     fun `Creating deposit correctly, should return Created`() = testApplication {
-        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup()
-
         coEvery { service.insertDeposit(any()) } returns 1
 
         val response = client.post("/api/createDeposit") {
@@ -111,7 +109,7 @@ class DepositRoutesTest {
         coEvery { service.getDepositById(uuid) } returns DepositData(
             uuid = uuid,
             quantity = 500.0,
-            userId=  userId,
+            userId = userId,
             wareId = wareId,
         )
 
@@ -161,7 +159,7 @@ class DepositRoutesTest {
             DepositData(
                 uuid = uuid,
                 quantity = 500.0,
-                userId=  userId,
+                userId = userId,
                 wareId = wareId,
             )
         )
@@ -212,7 +210,7 @@ class DepositRoutesTest {
             DepositData(
                 uuid = uuid,
                 quantity = 500.0,
-                userId=  userId,
+                userId = userId,
                 wareId = wareId,
             )
         )

@@ -1,14 +1,12 @@
 package io.lb.warehouse.user.data.service
 
-import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.util.loadQueryFromFile
-import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.util.UUID
-import org.jetbrains.annotations.VisibleForTesting
 
 class UserDatabaseService(
     private val connection: Connection,

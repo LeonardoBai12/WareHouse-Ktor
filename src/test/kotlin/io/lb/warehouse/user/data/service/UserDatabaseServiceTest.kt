@@ -6,9 +6,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.util.loadQueryFromFile
-import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.CREATE_TABLE_USER_DATA
 import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.DELETE_USER
@@ -20,10 +18,10 @@ import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.UPDATE_US
 import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
 import io.mockk.verify
-import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class UserDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
     private lateinit var service: UserDatabaseService
@@ -122,7 +120,6 @@ class UserDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
         every {
             queryResult.getString("profile_picture")
         } returns "picture"
-
 
         val result = service.getUserById(userId)
 

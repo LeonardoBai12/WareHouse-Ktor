@@ -16,11 +16,11 @@ import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WA
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.UPDATE_WARE
 import io.mockk.every
 import io.mockk.verify
-import java.sql.Statement
-import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.sql.Statement
+import java.util.UUID
 
 class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
     private lateinit var service: WareDatabaseService

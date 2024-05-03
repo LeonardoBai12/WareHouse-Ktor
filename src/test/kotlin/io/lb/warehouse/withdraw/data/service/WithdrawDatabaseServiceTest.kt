@@ -6,23 +6,20 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import io.lb.warehouse.core.util.loadQueryFromFile
+import io.lb.warehouse.util.BaseServiceTest
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.CREATE_TABLE_WITHDRAW
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.INSERT_WITHDRAW
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_USER_ID
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_WARE_ID
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAW_BY_ID
-import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.verify
-import java.sql.Connection
-import java.sql.Statement
-import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.sql.Statement.RETURN_GENERATED_KEYS
+import java.util.UUID
 
 class WithdrawDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
     private lateinit var service: WithdrawDatabaseService
@@ -140,13 +137,13 @@ class WithdrawDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
         )
 
         every {
-            connection.prepareStatement(loadQueryFromFile(INSERT_WITHDRAW), Statement.RETURN_GENERATED_KEYS)
+            connection.prepareStatement(loadQueryFromFile(INSERT_WITHDRAW), RETURN_GENERATED_KEYS)
         } returns preparedStatement
 
         service.insertWithdraw(withdraw)
 
         verify {
-            connection.prepareStatement(loadQueryFromFile(INSERT_WITHDRAW), Statement.RETURN_GENERATED_KEYS)
+            connection.prepareStatement(loadQueryFromFile(INSERT_WITHDRAW), RETURN_GENERATED_KEYS)
             preparedStatement.setObject(2, UUID.fromString(withdraw.userId))
             preparedStatement.setObject(3, UUID.fromString(withdraw.wareId))
             preparedStatement.setDouble(4, 500.0)

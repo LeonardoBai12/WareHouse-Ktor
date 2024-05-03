@@ -5,10 +5,10 @@ import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
-import org.jetbrains.annotations.VisibleForTesting
 
 class WareDatabaseService(private val connection: Connection) {
     companion object {

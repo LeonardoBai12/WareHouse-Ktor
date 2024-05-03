@@ -61,9 +61,7 @@ class WareRoutesTest {
 
     @Test
     fun `Creating ware correctly, should return Created`() = testApplication {
-        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup()
-
         coEvery { service.insertWare(any()) } returns 1
 
         val response = client.post("/api/createWare") {
@@ -153,7 +151,7 @@ class WareRoutesTest {
 
         coEvery { service.getWareById(uuid) } returns WareData(
             uuid = uuid,
-            userId=  userId,
+            userId = userId,
             name = "Novo Motor de partida Valtra BT",
             brand = "Valtra",
             description = "Novo",
@@ -184,7 +182,6 @@ class WareRoutesTest {
                 """.trimIndent()
             )
         }
-
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
@@ -224,7 +221,7 @@ class WareRoutesTest {
 
         coEvery { service.getWareById(uuid) } returns WareData(
             uuid = uuid,
-            userId=  userId,
+            userId = userId,
             name = "Novo Motor de partida Valtra BT",
             brand = "Valtra",
             description = "Novo",
@@ -279,7 +276,7 @@ class WareRoutesTest {
 
         coEvery { service.getWareById(uuid) } returns WareData(
             uuid = uuid,
-            userId=  userId,
+            userId = userId,
             name = "Novo Motor de partida Valtra BT",
             brand = "Valtra",
             description = "Novo",
@@ -334,7 +331,7 @@ class WareRoutesTest {
         coEvery { service.getWaresByUserId(userId) } returns listOf(
             WareData(
                 uuid = uuid,
-                userId=  userId,
+                userId = userId,
                 name = "Novo Motor de partida Valtra BT",
                 brand = "Valtra",
                 description = "Novo",

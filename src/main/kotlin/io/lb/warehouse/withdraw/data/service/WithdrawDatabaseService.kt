@@ -5,10 +5,10 @@ import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
-import org.jetbrains.annotations.VisibleForTesting
 
 class WithdrawDatabaseService(private val connection: Connection) {
     companion object {

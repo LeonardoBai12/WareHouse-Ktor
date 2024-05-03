@@ -16,11 +16,11 @@ import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SEL
 import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
 import io.mockk.verify
-import java.sql.Statement
-import java.util.UUID
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.sql.Statement
+import java.util.UUID
 
 class DepositDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_DEPOSIT) {
     private lateinit var service: DepositDatabaseService

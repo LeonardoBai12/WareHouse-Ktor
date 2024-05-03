@@ -8,17 +8,25 @@ import kotlinx.coroutines.withContext
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
+import org.jetbrains.annotations.VisibleForTesting
 
 class DepositDatabaseService(private val connection: Connection) {
     companion object {
-        private const val CREATE_AFTER_DEPOSIT_TRIGGER = "deposit/create_after_deposit_trigger.sql"
-        private const val CREATE_UPDATE_QUANTITY_FUNCTION =
+        @VisibleForTesting
+        const val CREATE_AFTER_DEPOSIT_TRIGGER = "deposit/create_after_deposit_trigger.sql"
+        @VisibleForTesting
+        const val CREATE_UPDATE_QUANTITY_FUNCTION =
             "deposit/create_update_available_quantity_function_on_deposit.sql"
-        private const val CREATE_TABLE_DEPOSIT = "deposit/create_table_deposit.sql"
-        private const val INSERT_DEPOSIT = "deposit/insert_deposit.sql"
-        private const val SELECT_DEPOSIT_BY_ID = "deposit/select_deposit_by_id.sql"
-        private const val SELECT_DEPOSITS_BY_USER_ID = "deposit/select_deposit_by_user_id.sql"
-        private const val SELECT_DEPOSITS_BY_WARE_ID = "deposit/select_deposit_by_ware_id.sql"
+        @VisibleForTesting
+        const val CREATE_TABLE_DEPOSIT = "deposit/create_table_deposit.sql"
+        @VisibleForTesting
+        const val INSERT_DEPOSIT = "deposit/insert_deposit.sql"
+        @VisibleForTesting
+        const val SELECT_DEPOSIT_BY_ID = "deposit/select_deposit_by_id.sql"
+        @VisibleForTesting
+        const val SELECT_DEPOSITS_BY_USER_ID = "deposit/select_deposit_by_user_id.sql"
+        @VisibleForTesting
+        const val SELECT_DEPOSITS_BY_WARE_ID = "deposit/select_deposit_by_ware_id.sql"
     }
 
     init {

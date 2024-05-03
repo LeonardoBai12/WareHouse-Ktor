@@ -1,6 +1,8 @@
 package io.lb.warehouse.user.data.service
 
+import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.util.loadQueryFromFile
+import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,6 +24,8 @@ class UserDatabaseService(
         const val SELECT_USER_BY_EMAIL = "user/select_user_by_email.sql"
         @VisibleForTesting
         const val SELECT_USER_BY_ID = "user/select_user_by_id.sql"
+        @VisibleForTesting
+        const val UPDATE_PASSWORD = "user/update_password.sql"
         @VisibleForTesting
         const val UPDATE_USER = "user/update_user.sql"
     }
@@ -48,6 +52,14 @@ class UserDatabaseService(
             setString(2, user.email)
             setString(3, user.profilePictureUrl)
             setObject(4, UUID.fromString(user.userId))
+            executeUpdate()
+        }
+    }
+
+    suspend fun updatePassword(userId: String, newPassword: String) = withContext(Dispatchers.IO) {
+        with(connection.prepareStatement(loadQueryFromFile(UPDATE_PASSWORD))) {
+            setString(1, newPassword)
+            setObject(2, UUID.fromString(userId))
             executeUpdate()
         }
     }

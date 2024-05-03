@@ -12,6 +12,7 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.extensions.passwordCheck
+import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
@@ -75,10 +76,6 @@ fun Application.userRoutes(userService: UserDatabaseService) {
                 return@put
             }
 
-            storedUser.password.takeIf { it.isNullOrEmpty() }?.let {
-                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-            }
-
             storedUser.takeIf {
                 user.password.passwordCheck(it.password!!)
             }?.let {
@@ -88,6 +85,35 @@ fun Application.userRoutes(userService: UserDatabaseService) {
                     profilePictureUrl = user.profilePictureUrl,
                 )
                 userService.updateUser(updatedUser)
+                call.respond(HttpStatusCode.OK, userId)
+            } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+        }
+
+        put("/api/updatePassword") {
+            val userId = call.parameters["userId"] ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@put
+            }
+
+            val storedUser = userService.getUserById(userId) ?: run {
+                call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
+                return@put
+            }
+
+            val request = call.receiveNullable<UpdatePasswordRequest>() ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@put
+            }
+
+            request.password.takeIf { it.isEmpty() }?.let {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+                return@put
+            }
+
+            storedUser.takeIf {
+                request.password.passwordCheck(it.password!!)
+            }?.let {
+                userService.updatePassword(userId, request.newPassword.encrypt()!!)
                 call.respond(HttpStatusCode.OK, userId)
             } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
         }

@@ -397,6 +397,138 @@ class UserRoutesTest {
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
+    @Test
+    fun `Updating password without id param, should return BadRequest`() = testApplication {
+        setup()
+
+        val response = client.put("/api/updatePassword") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setBody(
+                """
+                {
+                    "password": "testpassword",
+                    "newPassword": "newPassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+    }
+
+    @Test
+    fun `Updating password with wrong password, should return Unauthorized`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.put("/api/updatePassword") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "wrongpassword",
+                    "newPassword": "newPassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+    }
+
+    @Test
+    fun `Updating password with no password, should return Unauthorized`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.put("/api/updatePassword") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "",
+                    "newPassword": "newPassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+    }
+
+    @Test
+    fun `Updating password with typos, should return BadRequest`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.put("/api/updatePassword") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "passworld": "testpassword",
+                    "newPassworld": "newPassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+    }
+
+    @Test
+    fun `Updating password correctly, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+        coEvery { service.updatePassword(any(), any()) } returns 1
+
+        val response = client.put("/api/updatePassword") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "testpassword",
+                    "newPassword": "newPassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
     private fun ApplicationTestBuilder.setup() {
         install(ContentNegotiation) {
             json()

@@ -8,15 +8,22 @@ import kotlinx.coroutines.withContext
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
+import org.jetbrains.annotations.VisibleForTesting
 
 class WareDatabaseService(private val connection: Connection) {
     companion object {
-        private const val CREATE_TABLE_WARE = "ware/create_table_ware.sql"
-        private const val DELETE_WARE = "ware/delete_ware.sql"
-        private const val INSERT_WARE = "ware/insert_ware.sql"
-        private const val SELECT_WARE_BY_ID = "ware/select_ware_by_id.sql"
-        private const val SELECT_WARES_BY_USER_ID = "ware/select_ware_by_user_id.sql"
-        private const val UPDATE_WARE = "ware/update_ware.sql"
+        @VisibleForTesting
+        const val CREATE_TABLE_WARE = "ware/create_table_ware.sql"
+        @VisibleForTesting
+        const val DELETE_WARE = "ware/delete_ware.sql"
+        @VisibleForTesting
+        const val INSERT_WARE = "ware/insert_ware.sql"
+        @VisibleForTesting
+        const val SELECT_WARE_BY_ID = "ware/select_ware_by_id.sql"
+        @VisibleForTesting
+        const val SELECT_WARES_BY_USER_ID = "ware/select_ware_by_user_id.sql"
+        @VisibleForTesting
+        const val UPDATE_WARE = "ware/update_ware.sql"
     }
 
     init {
@@ -125,16 +132,16 @@ class WareDatabaseService(private val connection: Connection) {
         return@withContext wares
     }
 
-    suspend fun updateWare(id: String, ware: WareCreateRequest) = withContext(Dispatchers.IO) {
+    suspend fun updateWare(uuid: String, ware: WareCreateRequest) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_WARE))) {
             setString(1, ware.name)
             setString(2, ware.brand)
             setString(3, ware.description)
             setDouble(4, ware.weightPerUnit)
             setString(5, ware.weightUnit)
-            setDouble(6, ware.availableQuantity)
-            setString(8, ware.quantityUnit)
-            setString(9, ware.wareLocation)
+            setString(6, ware.quantityUnit)
+            setString(7, ware.wareLocation)
+            setObject(8, UUID.fromString(uuid))
             executeUpdate()
         }
     }

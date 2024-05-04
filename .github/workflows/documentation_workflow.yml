@@ -1,9 +1,12 @@
-name: Code Style Validation
+name: Documentation
 
-on: pull_request
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  code_style:
+  documentation:
     runs-on: macos-latest
 
     steps:
@@ -18,12 +21,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Validate Code Style
-        run: ./gradlew ktlintCheck
+      - name: Generate documentation
+        run: ./gradlew dokkaHtml
 
-      - name: Upload KtLint Reports (If KtLint finds violations)
-        if: failure()
+      - name: Upload documentation
         uses: actions/upload-artifact@v3
         with:
-          name: "WareHouse-KtLint-Report"
-          path: "build/reports/ktlint/"
+          name: WareHouse-KDoc-Documentation
+          path: 'build/dokka/html'

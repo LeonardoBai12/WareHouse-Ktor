@@ -33,7 +33,16 @@ This process helps maintain code consistency and quality throughout the project.
 
 # Current Test Coverage: 85%
 
-## Endpoints and Examples
+## API Documentation
 
-You can download a Postman collection with examples of each endpoint by [this link](https://github.com/LeonardoBai12/WareHouse-Ktor/blob/main/Warehouse.postman_collection.json).
+You can access the documentation of this API by [this link](https://documenter.getpostman.com/view/28162587/2sA3JGeihC).
 
+## KDoc Documentation
+
+The documentation is automatically generated and published for every push to the main branch.\
+To access the documentation, download the _WareHouse-KDoc-Documentation_ file from the [Documentation](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/documentation_workflow.yml) action artifacts.
+
+## Coverage Report
+
+A unit test coverage report is generated and published for every push to the main branch.\
+To access the test coverage report, download the _Lb-Tasks-Coverage-Report_ file from the [Coverage Report](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/coverage_report_workflow.yml) action artifacts.

@@ -14,6 +14,26 @@ import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.service.WareDatabaseService
 import java.sql.SQLException
 
+/**
+ * Extension function with routes related to ware operations.
+ *
+ * **Routes documentations:**
+ *
+ * Create ware:
+ * [/api/createWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#3ac9f51b-ceaf-486c-9a96-b99639dbe7c1)
+ *
+ * Update ware:
+ * [/api/updateWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#f2f873df-c270-436f-829d-18abb382de33)
+ *
+ * Get ware by UUID:
+ * [/api/ware](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#5fd92bd5-c595-4964-9563-3b6ed6c14bca)
+ *
+ * Get wares by user UUID:
+ * [/api/waresCreatedByUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#d26339cb-c8f0-49d2-a87d-c75abbd07efa)
+ *
+ * Delete ware:
+ * [/api/deleteWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0e7b55ba-0ade-4e5b-bcb5-7ae7ea665204)
+ */
 fun Application.wareRoutes(wareService: WareDatabaseService) {
     routing {
         post("/api/createWare") {

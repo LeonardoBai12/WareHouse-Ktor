@@ -10,22 +10,24 @@ import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
 
+/**
+ * Service class for interacting with the deposit table in the PostgreSQL database.
+ *
+ * @property connection Connection to the database.
+ */
 class DepositDatabaseService(private val connection: Connection) {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
     companion object {
-        @VisibleForTesting
         const val CREATE_AFTER_DEPOSIT_TRIGGER = "deposit/create_after_deposit_trigger.sql"
-        @VisibleForTesting
         const val CREATE_UPDATE_QUANTITY_FUNCTION =
             "deposit/create_update_available_quantity_function_on_deposit.sql"
-        @VisibleForTesting
         const val CREATE_TABLE_DEPOSIT = "deposit/create_table_deposit.sql"
-        @VisibleForTesting
         const val INSERT_DEPOSIT = "deposit/insert_deposit.sql"
-        @VisibleForTesting
         const val SELECT_DEPOSIT_BY_ID = "deposit/select_deposit_by_id.sql"
-        @VisibleForTesting
         const val SELECT_DEPOSITS_BY_USER_ID = "deposit/select_deposit_by_user_id.sql"
-        @VisibleForTesting
         const val SELECT_DEPOSITS_BY_WARE_ID = "deposit/select_deposit_by_ware_id.sql"
     }
 
@@ -36,22 +38,37 @@ class DepositDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_DEPOSIT_TRIGGER))
     }
 
-    suspend fun insertDeposit(deposit: DepositCreateRequest): Int = withContext(Dispatchers.IO) {
+    /**
+     * Inserts a deposit into the database.
+     *
+     * @param deposit The deposit data to insert.
+     * @return The UUID of the inserted deposit.
+     */
+    suspend fun insertDeposit(deposit: DepositCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_DEPOSIT),
             Statement.RETURN_GENERATED_KEYS
         )
+        val uuid = UUID.randomUUID()
 
         with(statement) {
-            setObject(1, UUID.randomUUID())
+            setObject(1, uuid)
             setObject(2, UUID.fromString(deposit.userId))
             setObject(3, UUID.fromString(deposit.wareId))
             setDouble(4, deposit.quantity)
 
             executeUpdate()
         }
+
+        uuid.toString()
     }
 
+    /**
+     * Retrieves a deposit by its ID from the database.
+     *
+     * @param id The ID of the deposit to retrieve.
+     * @return The deposit data, or null if not found.
+     */
     suspend fun getDepositById(id: String): DepositData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_DEPOSIT_BY_ID)
@@ -75,6 +92,12 @@ class DepositDatabaseService(private val connection: Connection) {
         }
     }
 
+    /**
+     * Retrieves deposits by user ID from the database.
+     *
+     * @param userUUID The UUID of the user.
+     * @return List of deposits associated with the user.
+     */
     suspend fun getDepositsByUserId(userUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
         val deposits = mutableListOf<DepositData>()
         val statement = connection.prepareStatement(
@@ -101,6 +124,12 @@ class DepositDatabaseService(private val connection: Connection) {
         return@withContext deposits
     }
 
+    /**
+     * Retrieves deposits by ware ID from the database.
+     *
+     * @param wareUUID The UUID of the ware.
+     * @return List of deposits associated with the ware.
+     */
     suspend fun getDepositsByWareId(wareUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
         val deposits = mutableListOf<DepositData>()
         val statement = connection.prepareStatement(

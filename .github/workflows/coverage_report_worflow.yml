@@ -1,10 +1,12 @@
-name: Test coverage verification
+name: Test Coverage Report
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
-  coverage:
+  coverage-report:
     runs-on: macos-latest
 
     steps:
@@ -22,19 +24,11 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-      - name: Generate Tests Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: WareHouse-Coverage-Report
-          path: 'build/reports/tests/test/'
-
-      - name: Validate coverage
-        run: ./gradlew jacocoTestCoverageVerification
-
       - name: Generate coverage report
         run: ./gradlew jacocoTestReport
 
       - name: Upload Unit Tests Coverage Report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report

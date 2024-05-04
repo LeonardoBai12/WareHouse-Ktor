@@ -12,6 +12,23 @@ import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import java.sql.SQLException
 
+/**
+ * Extension function with routes related to deposit operations.
+ *
+ * **Routes documentations:**
+ *
+ * Create deposit:
+ * [/api/createDeposit](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#d5fd3458-142b-41da-90b0-9425eb7f1157)
+ *
+ * Get deposit by UUID:
+ * [/api/deposit](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#105e8197-f646-440a-9eff-40bce2c3721d)
+ *
+ * Get deposits by user UUID:
+ * [/api/depositsCreatedByUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0c6485b0-c820-4bc8-99f2-2c4f1b33389b)
+ *
+ * Get deposits by ware UUID:
+ * [/api/depositsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#03bbb3f7-1a9d-452d-965c-388e73a4eb59)
+ */
 fun Application.depositRoutes(depositService: DepositDatabaseService) {
     routing {
         post("/api/createDeposit") {

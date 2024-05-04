@@ -8,23 +8,23 @@ import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.util.UUID
 
-class UserDatabaseService(
-    private val connection: Connection,
-) {
+/**
+ * Service class for interacting with the user data table in the PostgreSQL database.
+ *
+ * @property connection Connection to the database.
+ */
+class UserDatabaseService(private val connection: Connection) {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
     companion object {
-        @VisibleForTesting
         const val CREATE_TABLE_USER_DATA = "user/create_table_user.sql"
-        @VisibleForTesting
         const val DELETE_USER = "user/delete_user.sql"
-        @VisibleForTesting
         const val INSERT_USER = "user/insert_user.sql"
-        @VisibleForTesting
         const val SELECT_USER_BY_EMAIL = "user/select_user_by_email.sql"
-        @VisibleForTesting
         const val SELECT_USER_BY_ID = "user/select_user_by_id.sql"
-        @VisibleForTesting
         const val UPDATE_PASSWORD = "user/update_password.sql"
-        @VisibleForTesting
         const val UPDATE_USER = "user/update_user.sql"
     }
 
@@ -33,6 +33,11 @@ class UserDatabaseService(
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_USER_DATA))
     }
 
+    /**
+     * Creates a new user in the database.
+     *
+     * @param user The user data to insert.
+     */
     suspend fun createUser(user: UserData) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(INSERT_USER))) {
             setObject(1, UUID.fromString(user.userId))
@@ -44,6 +49,11 @@ class UserDatabaseService(
         }
     }
 
+    /**
+     * Updates an existing user in the database.
+     *
+     * @param user The updated user data.
+     */
     suspend fun updateUser(user: UserData) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_USER))) {
             setString(1, user.userName)
@@ -54,6 +64,12 @@ class UserDatabaseService(
         }
     }
 
+    /**
+     * Updates the password of a user in the database.
+     *
+     * @param userId The ID of the user whose password to update.
+     * @param newPassword The new password.
+     */
     suspend fun updatePassword(userId: String, newPassword: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_PASSWORD))) {
             setString(1, newPassword)
@@ -62,6 +78,11 @@ class UserDatabaseService(
         }
     }
 
+    /**
+     * Deletes a user from the database.
+     *
+     * @param userId The ID of the user to delete.
+     */
     suspend fun deleteUser(userId: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(DELETE_USER))) {
             setObject(1, UUID.fromString(userId))
@@ -69,6 +90,12 @@ class UserDatabaseService(
         }
     }
 
+    /**
+     * Retrieves a user by ID from the database.
+     *
+     * @param userId The ID of the user to retrieve.
+     * @return The user data, or null if not found.
+     */
     suspend fun getUserById(userId: String): UserData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_ID))
         statement.setObject(1, UUID.fromString(userId))
@@ -87,6 +114,12 @@ class UserDatabaseService(
         }
     }
 
+    /**
+     * Checks if an email is already in use in the database.
+     *
+     * @param email The email to check.
+     * @return True if the email is already in use, false otherwise.
+     */
     suspend fun isEmailAlreadyInUse(email: String): Boolean = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
         statement.setString(1, email)

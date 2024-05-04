@@ -10,22 +10,24 @@ import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
 
+/**
+ * Service class for interacting with the withdrawal table in the PostgreSQL database.
+ *
+ * @property connection Connection to the database.
+ */
 class WithdrawDatabaseService(private val connection: Connection) {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
     companion object {
-        @VisibleForTesting
         const val CREATE_AFTER_WITHDRAW_TRIGGER = "withdraw/create_after_withdraw_trigger.sql"
-        @VisibleForTesting
         const val CREATE_UPDATE_QUANTITY_FUNCTION =
             "withdraw/create_update_available_quantity_function_on_withdraw.sql"
-        @VisibleForTesting
         const val CREATE_TABLE_WITHDRAW = "withdraw/create_table_withdraw.sql"
-        @VisibleForTesting
         const val INSERT_WITHDRAW = "withdraw/insert_withdraw.sql"
-        @VisibleForTesting
         const val SELECT_WITHDRAW_BY_ID = "withdraw/select_withdraw_by_id.sql"
-        @VisibleForTesting
         const val SELECT_WITHDRAWS_BY_USER_ID = "withdraw/select_withdraw_by_user_id.sql"
-        @VisibleForTesting
         const val SELECT_WITHDRAWS_BY_WARE_ID = "withdraw/select_withdraw_by_ware_id.sql"
     }
 
@@ -36,22 +38,37 @@ class WithdrawDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_WITHDRAW_TRIGGER))
     }
 
-    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): Int = withContext(Dispatchers.IO) {
+    /**
+     * Inserts a withdrawal into the database.
+     *
+     * @param withdraw The withdrawal data to insert.
+     * @return The UUID of the inserted withdrawal.
+     */
+    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WITHDRAW),
             Statement.RETURN_GENERATED_KEYS
         )
+        val uuid = UUID.randomUUID()
 
         with(statement) {
-            setObject(1, UUID.randomUUID())
+            setObject(1, uuid)
             setObject(2, UUID.fromString(withdraw.userId))
             setObject(3, UUID.fromString(withdraw.wareId))
             setDouble(4, withdraw.quantity)
 
             executeUpdate()
         }
+
+        uuid.toString()
     }
 
+    /**
+     * Retrieves a withdrawals by its ID from the database.
+     *
+     * @param id The ID of the withdrawals to retrieve.
+     * @return The withdrawals data, or null if not found.
+     */
     suspend fun getWithdrawById(id: String): WithdrawData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_WITHDRAW_BY_ID)
@@ -75,6 +92,12 @@ class WithdrawDatabaseService(private val connection: Connection) {
         }
     }
 
+    /**
+     * Retrieves withdrawals by user ID from the database.
+     *
+     * @param userUUID The UUID of the user.
+     * @return List of withdrawals associated with the user.
+     */
     suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
         val withdraws = mutableListOf<WithdrawData>()
         val statement = connection.prepareStatement(
@@ -101,6 +124,12 @@ class WithdrawDatabaseService(private val connection: Connection) {
         return@withContext withdraws
     }
 
+    /**
+     * Retrieves withdrawals by ware ID from the database.
+     *
+     * @param wareUUID The UUID of the ware.
+     * @return List of withdrawals associated with the ware.
+     */
     suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
         val withdraws = mutableListOf<WithdrawData>()
         val statement = connection.prepareStatement(

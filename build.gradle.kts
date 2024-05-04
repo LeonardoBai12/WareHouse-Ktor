@@ -11,6 +11,20 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
     id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
     id("jacoco")
+    id("org.jetbrains.dokka") version "1.9.20"
+}
+
+tasks.dokkaHtml {
+    dokkaSourceSets.configureEach {
+        includes.from("Packages.md")
+
+        skipEmptyPackages.set(true)
+
+        perPackageOption {
+            matchingRegex.set(".*.(core).*")
+            suppress.set(true)
+        }
+    }
 }
 
 jacoco {

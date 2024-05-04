@@ -305,6 +305,87 @@ class UserRoutesTest {
     }
 
     @Test
+    fun `Deleting user with wrong password, should return Unauthorized`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "wrongpassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+    }
+
+    @Test
+    fun `Deleting password with no password, should return Unauthorized`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": ""
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+    }
+
+    @Test
+    fun `Deleting password with typos, should return BadRequest`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        setup()
+
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.delete("/api/deleteUser") {
+            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "passworld": "testpassword"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+    }
+
+    @Test
     fun `Deleting with no id param, should return BadRequesst`() = testApplication {
         setup()
 
@@ -346,6 +427,13 @@ class UserRoutesTest {
         val response = client.delete("/api/deleteUser") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "testpassword"
+                }
+                """.trimIndent()
+            )
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)

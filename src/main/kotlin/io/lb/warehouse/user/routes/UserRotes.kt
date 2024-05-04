@@ -12,13 +12,23 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.extensions.passwordCheck
+import io.lb.warehouse.user.data.model.DeleteUserRequest
 import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
 
+/**
+ * Contains routes related to user operations.
+ */
 fun Application.userRoutes(userService: UserDatabaseService) {
     routing {
+        /**
+         * Endpoint to create a new user.
+         *
+         * Expects a [UserCreateRequest] object in the request body.
+         * Responds with the ID of the newly created user if successful, or an appropriate HTTP status code otherwise.
+         */
         post("/api/createUser") {
             val user = call.receiveNullable<UserCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
@@ -124,13 +134,27 @@ fun Application.userRoutes(userService: UserDatabaseService) {
                 return@delete
             }
 
-            userService.getUserById(userId) ?: run {
+            val storedUser = userService.getUserById(userId) ?: run {
                 call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
                 return@delete
             }
 
-            userService.deleteUser(userId)
-            call.respond(HttpStatusCode.OK, "User deleted successfully")
+            val request = call.receiveNullable<DeleteUserRequest>() ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+
+            request.password.takeIf { it.isEmpty() }?.let {
+                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+                return@delete
+            }
+
+            storedUser.takeIf {
+                request.password.passwordCheck(it.password!!)
+            }?.let {
+                userService.deleteUser(userId)
+                call.respond(HttpStatusCode.OK, userId)
+            } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
         }
     }
 }

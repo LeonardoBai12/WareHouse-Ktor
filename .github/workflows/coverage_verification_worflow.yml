@@ -23,19 +23,14 @@ jobs:
         run: ./gradlew test
 
       - name: Generate Tests Report
-        if: ${{ steps.coverage_verification.outputs.test_status == '0' }}
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Test-Report
           path: 'build/reports/tests/test/'
 
       - name: Validate coverage
-        id: coverage_verification
         run: ./gradlew jacocoTestCoverageVerification
-
-      - name: Generate coverage report (If JaCoCo finds violations)
-        if: failure()
-        run: ./gradlew jacocoTestReport
 
       - name: Upload Unit Tests Coverage Report (If JaCoCo finds violations)
         if: failure()

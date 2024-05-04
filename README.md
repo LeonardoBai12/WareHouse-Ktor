@@ -36,3 +36,13 @@ This process helps maintain code consistency and quality throughout the project.
 ## API Documentation
 
 You can access the documentation of this API by [this link](https://documenter.getpostman.com/view/28162587/2sA3JGeihC).
+
+## KDoc Documentation
+
+The documentation is automatically generated and published for every push to the main branch.\
+To access the documentation, download the _WareHouse-KDoc-Documentation_ file from the [Documentation](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/documentation_workflow.yml) action artifacts.
+
+## Coverage Report
+
+A unit test coverage report is generated and published for every push to the main branch.\
+To access the test coverage report, download the _Lb-Tasks-Coverage-Report_ file from the [Coverage Report](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/coverage_report_workflow.yml) action artifacts.

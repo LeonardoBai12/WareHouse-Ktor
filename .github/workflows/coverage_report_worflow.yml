@@ -22,11 +22,17 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+      - name: Upload Tests Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: WareHouse-Coverage-Report
+          path: 'build/reports/tests/test/'
+
       - name: Validate coverage
-        run: ./gradlew jacocoTestCoverageVerification --no-daemon
+        run: ./gradlew jacocoTestCoverageVerification
 
       - name: Generate coverage report
-        run: ./gradlew jacocoTestReport --no-daemon
+        run: ./gradlew jacocoTestReport
 
       - name: Upload Unit Tests Coverage Report
         uses: actions/upload-artifact@v3

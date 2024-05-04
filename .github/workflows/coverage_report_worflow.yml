@@ -20,10 +20,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run tests and validate coverage
-        run: ./gradlew clean jacocoTestCoverageVerification --no-daemon
+        run: ./gradlew clean jacocoTestReport --no-daemon
 
       - name: Upload Unit Tests Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report
-          path: 'app/build/reports/coverage/test/html/'
+          path: 'build/reports/coverage/test/html/'

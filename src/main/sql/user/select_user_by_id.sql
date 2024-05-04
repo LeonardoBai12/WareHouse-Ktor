@@ -1,0 +1,1 @@
+SELECT user_id, user_name, password, email, profile_picture FROM user_data WHERE user_id = ?;

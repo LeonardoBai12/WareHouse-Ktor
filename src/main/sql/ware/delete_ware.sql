@@ -1,0 +1,1 @@
+DELETE FROM ware WHERE uuid = ?;

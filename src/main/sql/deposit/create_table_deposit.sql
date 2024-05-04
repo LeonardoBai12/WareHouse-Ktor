@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS deposit (
+    uuid UUID PRIMARY KEY,
+    user_id UUID REFERENCES user_data(user_id) ON DELETE CASCADE,
+    ware_id UUID REFERENCES ware(uuid) ON DELETE CASCADE,
+    quantity DOUBLE PRECISION DEFAULT 0.0,
+    timestamp TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);

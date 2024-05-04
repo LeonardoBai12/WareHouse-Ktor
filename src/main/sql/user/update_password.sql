@@ -1,0 +1,1 @@
+UPDATE user_data SET password = ? WHERE user_id = ?;

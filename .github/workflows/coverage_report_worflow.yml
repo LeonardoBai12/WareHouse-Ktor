@@ -1,4 +1,4 @@
-name: Coverage validation
+name: Test coverage verification
 
 on:
   pull_request:
@@ -19,8 +19,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Run tests
+        run: ./gradlew test
+
       - name: Run tests and validate coverage
-        run: ./gradlew clean jacocoTestReport --no-daemon
+        run: ./gradlew jacocoTestReport --no-daemon
+
+      - name: Run tests and validate coverage
+        run: ./gradlew jacocoTestCoverageVerification --no-daemon
 
       - name: Upload Unit Tests Coverage Report
         uses: actions/upload-artifact@v3

@@ -62,7 +62,7 @@ class WareRoutesTest {
     @Test
     fun `Creating ware correctly, should return Created`() = testApplication {
         setup()
-        coEvery { service.insertWare(any()) } returns 1
+        coEvery { service.insertWare(any()) } returns ""
 
         val response = client.post("/api/createWare") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

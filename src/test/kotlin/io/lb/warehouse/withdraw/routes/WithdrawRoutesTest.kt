@@ -54,7 +54,7 @@ class WithdrawRoutesTest {
     @Test
     fun `Creating withdraw correctly, should return Created`() = testApplication {
         setup()
-        coEvery { service.insertWithdraw(any()) } returns 1
+        coEvery { service.insertWithdraw(any()) } returns ""
 
         val response = client.post("/api/createWithdraw") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

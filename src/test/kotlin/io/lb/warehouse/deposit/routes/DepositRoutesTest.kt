@@ -54,7 +54,7 @@ class DepositRoutesTest {
     @Test
     fun `Creating deposit correctly, should return Created`() = testApplication {
         setup()
-        coEvery { service.insertDeposit(any()) } returns 1
+        coEvery { service.insertDeposit(any()) } returns ""
 
         val response = client.post("/api/createDeposit") {
             header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

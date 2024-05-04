@@ -10,19 +10,22 @@ import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID
 
+/**
+ * Service class for interacting with the ware table in the PostgreSQL database.
+ *
+ * @property connection Connection to the database.
+ */
 class WareDatabaseService(private val connection: Connection) {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
     companion object {
-        @VisibleForTesting
         const val CREATE_TABLE_WARE = "ware/create_table_ware.sql"
-        @VisibleForTesting
         const val DELETE_WARE = "ware/delete_ware.sql"
-        @VisibleForTesting
         const val INSERT_WARE = "ware/insert_ware.sql"
-        @VisibleForTesting
         const val SELECT_WARE_BY_ID = "ware/select_ware_by_id.sql"
-        @VisibleForTesting
         const val SELECT_WARES_BY_USER_ID = "ware/select_ware_by_user_id.sql"
-        @VisibleForTesting
         const val UPDATE_WARE = "ware/update_ware.sql"
     }
 
@@ -31,6 +34,12 @@ class WareDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_WARE))
     }
 
+    /**
+     * Inserts a new ware into the database.
+     *
+     * @param ware The ware data to insert.
+     * @return The UUID of the inserted ware.
+     */
     suspend fun insertWare(ware: WareCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WARE),
@@ -55,6 +64,12 @@ class WareDatabaseService(private val connection: Connection) {
         uuid.toString()
     }
 
+    /**
+     * Retrieves a ware by its ID from the database.
+     *
+     * @param id The ID of the ware to retrieve.
+     * @return The ware data, or null if not found.
+     */
     suspend fun getWareById(id: String): WareData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_WARE_BY_ID)
@@ -90,6 +105,12 @@ class WareDatabaseService(private val connection: Connection) {
         }
     }
 
+    /**
+     * Retrieves wares by user ID from the database.
+     *
+     * @param userUUID The UUID of the user.
+     * @return List of wares associated with the user.
+     */
     suspend fun getWaresByUserId(userUUID: String): List<WareData> = withContext(Dispatchers.IO) {
         val wares = mutableListOf<WareData>()
         val statement = connection.prepareStatement(
@@ -128,6 +149,12 @@ class WareDatabaseService(private val connection: Connection) {
         return@withContext wares
     }
 
+    /**
+     * Updates a ware in the database.
+     *
+     * @param uuid The UUID of the ware to update.
+     * @param ware The updated ware data.
+     */
     suspend fun updateWare(uuid: String, ware: WareCreateRequest) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_WARE))) {
             setString(1, ware.name)
@@ -142,6 +169,11 @@ class WareDatabaseService(private val connection: Connection) {
         }
     }
 
+    /**
+     * Deletes a ware from the database.
+     *
+     * @param id The ID of the ware to delete.
+     */
     suspend fun deleteWare(id: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(DELETE_WARE))) {
             setObject(1, UUID.fromString(id))

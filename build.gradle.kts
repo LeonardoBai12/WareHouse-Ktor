@@ -14,6 +14,19 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
 }
 
+tasks.dokkaHtml {
+    dokkaSourceSets.configureEach {
+        includes.from("Packages.md")
+
+        skipEmptyPackages.set(true)
+
+        perPackageOption {
+            matchingRegex.set(".*.(core).*")
+            suppress.set(true)
+        }
+    }
+}
+
 jacoco {
     version = "0.8.7"
 }

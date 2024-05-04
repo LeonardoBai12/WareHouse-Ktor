@@ -19,7 +19,24 @@ import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
 
 /**
- * Contains routes related to user operations.
+ * Extension function with routes related to user operations.
+ *
+ * **Routes documentations:**
+ *
+ * Create user:
+ * [/api/createUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
+ *
+ * Get user by UUID:
+ * [/api/user](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#e836f3e1-130e-48e1-8045-69d8e2c8f2b8)
+ *
+ * Update user:
+ * [/api/updateUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#f4555925-1043-4457-840a-b0b1cd62efd9)
+ *
+ * Update user's password:
+ * [/api/updatePassword](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#df877090-8a69-4823-8bfa-a570f74231c3)
+ *
+ * Delete user:
+ * [/api/deleteUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#44e9c25d-ef79-446b-8dca-be4934599061)
  */
 fun Application.userRoutes(userService: UserDatabaseService) {
     routing {

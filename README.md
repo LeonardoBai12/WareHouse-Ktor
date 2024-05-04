@@ -33,7 +33,6 @@ This process helps maintain code consistency and quality throughout the project.
 
 # Current Test Coverage: 85%
 
-## Endpoints and Examples
+## API Documentation
 
-You can download a Postman collection with examples of each endpoint by [this link](https://github.com/LeonardoBai12/WareHouse-Ktor/blob/main/Warehouse.postman_collection.json).
-
+You can access the documentation of this API by [this link](https://documenter.getpostman.com/view/28162587/2sA3JGeihC).

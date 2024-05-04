@@ -20,6 +20,7 @@ The application is built using the following technologies:
 * [JUnit 5](https://junit.org/junit5/docs/current/user-guide) for unit testing.
 * [MockK](https://mockk.io) for mocking objects in unit tests.
 * [GitHub Actions](https://docs.github.com/pt/actions/learn-github-actions) for Continuous Integration/Continuous Deployment (CI/CD).
+* [Dokka](https://github.com/Kotlin/dokka) for generating documentation.
 
 ## Quality Assurance
 

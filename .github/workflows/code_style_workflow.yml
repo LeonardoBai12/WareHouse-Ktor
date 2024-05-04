@@ -19,10 +19,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Validate Code Style
-        run: ./gradlew clean ktlintCheck --no-daemon
+        run: |
+          ./gradlew ktlintCheck --no-daemon
+          echo "::set-output name=ktlint_status::$?"
 
-      - name: Upload KtLint Reports
-        if: ${{ always() }}
+      - name: Upload KtLint Reports (If KtLint finds violations)
+        if: ${{ steps.code_style.outputs.ktlint_status == '0' }}
         uses: actions/upload-artifact@v3
         with:
           name: "ktlint-reports"

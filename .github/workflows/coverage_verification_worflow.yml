@@ -32,6 +32,10 @@ jobs:
       - name: Validate coverage
         run: ./gradlew jacocoTestCoverageVerification
 
+      - name: Generate coverage report (If JaCoCo finds violations)
+        if: failure()
+        run: ./gradlew jacocoTestReport
+
       - name: Upload Unit Tests Coverage Report (If JaCoCo finds violations)
         if: failure()
         uses: actions/upload-artifact@v3

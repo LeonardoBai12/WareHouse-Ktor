@@ -1,4 +1,4 @@
-name: Test Coverage Verification
+name: Test and Coverage Verification
 
 on:
   pull_request:

@@ -1,7 +1,9 @@
 name: Test Coverage Report
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   coverage-report:

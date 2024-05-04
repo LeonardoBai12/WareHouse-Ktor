@@ -1,4 +1,4 @@
-name: Test coverage verification
+name: Test Coverage Verification
 
 on:
   pull_request:
@@ -20,9 +20,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run tests
-        run: |
-          ./gradlew test
-          echo "::set-output name=test_status::$?"
+        run: ./gradlew test
 
       - name: Generate Tests Report
         if: ${{ steps.coverage_verification.outputs.test_status == '0' }}
@@ -33,16 +31,14 @@ jobs:
 
       - name: Validate coverage
         id: coverage_verification
-        run: |
-          ./gradlew jacocoTestCoverageVerification
-          echo "::set-output name=coverage_verification_status::$?"
+        run: ./gradlew jacocoTestCoverageVerification
 
       - name: Generate coverage report (If JaCoCo finds violations)
-        if: ${{ steps.coverage_verification.outputs.coverage_verification_status == '0' }}
+        if: failure()
         run: ./gradlew jacocoTestReport
 
       - name: Upload Unit Tests Coverage Report (If JaCoCo finds violations)
-        if: ${{ steps.coverage_verification.outputs.coverage_verification_status == '0' }}
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report

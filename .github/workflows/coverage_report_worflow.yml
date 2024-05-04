@@ -1,4 +1,4 @@
-name: Test coverage report
+name: Test Coverage Report
 
 on:
   pull_request:
@@ -26,6 +26,7 @@ jobs:
         run: ./gradlew jacocoTestReport
 
       - name: Upload Unit Tests Coverage Report
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report

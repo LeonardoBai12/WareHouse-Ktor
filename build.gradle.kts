@@ -31,7 +31,7 @@ jacoco {
     version = "0.8.7"
 }
 
-val minimumCoverage = "0.85".toBigDecimal()
+val minimumCoverage = "0.89".toBigDecimal()
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)

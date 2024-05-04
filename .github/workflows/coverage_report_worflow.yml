@@ -1,10 +1,10 @@
-name: Test coverage verification
+name: Test coverage report
 
 on:
   pull_request:
 
 jobs:
-  coverage:
+  coverage-report:
     runs-on: macos-latest
 
     steps:

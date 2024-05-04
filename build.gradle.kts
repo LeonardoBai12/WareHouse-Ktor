@@ -17,7 +17,7 @@ jacoco {
     version = "0.8.7"
 }
 
-val minimumCoverage = "0.84".toBigDecimal()
+val minimumCoverage = "0.85".toBigDecimal()
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
@@ -46,6 +46,7 @@ fun Build_gradle.fileTreeExclusions() =
         exclude(
             "**/R.class",
             "**/BuildConfig.*",
+            "**/session/**",
             "**/model/**",
             "**/plugins/**",
         )

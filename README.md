@@ -45,4 +45,4 @@ To access the documentation, download the _WareHouse-KDoc-Documentation_ file fr
 ## Coverage Report
 
 A unit test coverage report is generated and published for every push to the main branch.\
-To access the test coverage report, download the _Lb-Tasks-Coverage-Report_ file from the [Coverage Report](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/coverage_report_workflow.yml) action artifacts.
+To access the test coverage report, download the _Lb-Tasks-Coverage-Report_ file from the [Coverage Report](https://github.com/LeonardoBai12/WareHouse-Ktor/actions/workflows/coverage_report_worflow.yml) action artifacts.

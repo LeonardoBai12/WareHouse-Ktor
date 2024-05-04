@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   code_style:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -26,4 +26,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "ktlint-reports"
-          path: "app/build/reports/ktlint/"
+          path: "build/reports/ktlint/"

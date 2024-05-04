@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.org.fusesource.jansi.AnsiRenderer.test
-
 val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
@@ -12,7 +10,47 @@ plugins {
     id("io.ktor.plugin") version "2.3.4"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
     id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
+    id("jacoco")
 }
+
+jacoco {
+    version = "0.8.7"
+}
+
+val minimumCoverage = "0.85".toBigDecimal()
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    finalizedBy(tasks.jacocoTestCoverageVerification)
+    classDirectories.setFrom(
+        fileTreeExclusions()
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        classDirectories.setFrom(
+            fileTreeExclusions()
+        )
+        rule {
+            classDirectories.setFrom(tasks.jacocoTestReport.get().classDirectories)
+            limit {
+                minimum = minimumCoverage
+            }
+        }
+    }
+}
+
+fun Build_gradle.fileTreeExclusions() =
+    sourceSets.main.get().output.asFileTree.matching {
+        exclude(
+            "**/R.class",
+            "**/BuildConfig.*",
+            "**/session/**",
+            "**/model/**",
+            "**/plugins/**",
+        )
+    }
 
 tasks.test {
     useJUnitPlatform()

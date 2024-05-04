@@ -1,0 +1,41 @@
+name: Test coverage verification
+
+on:
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 19
+        uses: actions/setup-java@v2
+        with:
+          java-version: 19
+          distribution: 'adopt'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Generate Tests Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: WareHouse-Coverage-Report
+          path: 'build/reports/tests/test/'
+
+      - name: Validate coverage
+        run: ./gradlew jacocoTestCoverageVerification
+
+      - name: Generate coverage report
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload Unit Tests Coverage Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: WareHouse-Coverage-Report
+          path: 'build/reports/jacoco/test/html/'

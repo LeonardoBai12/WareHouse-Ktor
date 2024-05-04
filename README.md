@@ -32,3 +32,8 @@ To ensure high-quality code, the following tools and processes are used before m
 This process helps maintain code consistency and quality throughout the project.
 
 # Current Test Coverage: 85%
+
+## Endpoints and Examples
+
+You can download a Postman collection with examples of each endpoint by [this link](https://github.com/LeonardoBai12/WareHouse-Ktor/blob/main/Warehouse.postman_collection.json).
+

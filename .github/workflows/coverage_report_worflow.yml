@@ -22,7 +22,7 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-      - name: Upload Tests Report
+      - name: Generate Tests Report
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report

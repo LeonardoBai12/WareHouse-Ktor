@@ -14,6 +14,7 @@ Warehouse offers the following features:
 The application is built using the following technologies:
 
 * [Ktor](https://ktor.io) for asynchronous server application.
+* [JaCoCo](https://github.com/jacoco/jacoco) for unit test coverage validation and report.
 * [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) for asynchronous programming.
 * [PostgreSQL](https://www.postgresql.org) for data management.
 * [JUnit 5](https://junit.org/junit5/docs/current/user-guide) for unit testing.
@@ -26,5 +27,8 @@ To ensure high-quality code, the following tools and processes are used before m
 
 * [Ktint](https://pinterest.github.io/ktlint/) is used to enforce code style guidelines.
 * All unit tests are run to ensure code functionality and quality.
+* Ensure unit test coverage never decreases by JaCoCo validation.
 
 This process helps maintain code consistency and quality throughout the project.
+
+# Current Test Coverage: 85%

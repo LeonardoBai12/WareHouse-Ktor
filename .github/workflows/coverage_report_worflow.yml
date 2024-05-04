@@ -38,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: WareHouse-Coverage-Report
-          path: 'build/reports/coverage/test/html/'
+          path: 'build/reports/jacoco/test/html/'

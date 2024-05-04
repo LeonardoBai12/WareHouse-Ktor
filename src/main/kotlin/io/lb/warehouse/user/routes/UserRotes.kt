@@ -23,12 +23,6 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  */
 fun Application.userRoutes(userService: UserDatabaseService) {
     routing {
-        /**
-         * Endpoint to create a new user.
-         *
-         * Expects a [UserCreateRequest] object in the request body.
-         * Responds with the ID of the newly created user if successful, or an appropriate HTTP status code otherwise.
-         */
         post("/api/createUser") {
             val user = call.receiveNullable<UserCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)

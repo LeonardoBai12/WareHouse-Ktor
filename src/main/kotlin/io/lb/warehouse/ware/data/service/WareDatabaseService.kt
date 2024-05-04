@@ -31,14 +31,15 @@ class WareDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_WARE))
     }
 
-    suspend fun insertWare(ware: WareCreateRequest): Int = withContext(Dispatchers.IO) {
+    suspend fun insertWare(ware: WareCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WARE),
             Statement.RETURN_GENERATED_KEYS
         )
+        val uuid = UUID.randomUUID()
 
         with(statement) {
-            setObject(1, UUID.randomUUID())
+            setObject(1, uuid)
             setObject(2, UUID.fromString(ware.userId))
             setString(3, ware.name)
             setString(4, ware.brand)
@@ -50,6 +51,8 @@ class WareDatabaseService(private val connection: Connection) {
             setString(10, ware.wareLocation)
             executeUpdate()
         }
+
+        uuid.toString()
     }
 
     suspend fun getWareById(id: String): WareData? = withContext(Dispatchers.IO) {

@@ -36,20 +36,23 @@ class DepositDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_DEPOSIT_TRIGGER))
     }
 
-    suspend fun insertDeposit(deposit: DepositCreateRequest): Int = withContext(Dispatchers.IO) {
+    suspend fun insertDeposit(deposit: DepositCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_DEPOSIT),
             Statement.RETURN_GENERATED_KEYS
         )
+        val uuid = UUID.randomUUID()
 
         with(statement) {
-            setObject(1, UUID.randomUUID())
+            setObject(1, uuid)
             setObject(2, UUID.fromString(deposit.userId))
             setObject(3, UUID.fromString(deposit.wareId))
             setDouble(4, deposit.quantity)
 
             executeUpdate()
         }
+
+        uuid.toString()
     }
 
     suspend fun getDepositById(id: String): DepositData? = withContext(Dispatchers.IO) {

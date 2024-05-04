@@ -36,20 +36,23 @@ class WithdrawDatabaseService(private val connection: Connection) {
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_WITHDRAW_TRIGGER))
     }
 
-    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): Int = withContext(Dispatchers.IO) {
+    suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WITHDRAW),
             Statement.RETURN_GENERATED_KEYS
         )
+        val uuid = UUID.randomUUID()
 
         with(statement) {
-            setObject(1, UUID.randomUUID())
+            setObject(1, uuid)
             setObject(2, UUID.fromString(withdraw.userId))
             setObject(3, UUID.fromString(withdraw.wareId))
             setDouble(4, withdraw.quantity)
 
             executeUpdate()
         }
+
+        uuid.toString()
     }
 
     suspend fun getWithdrawById(id: String): WithdrawData? = withContext(Dispatchers.IO) {

@@ -22,11 +22,11 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-      - name: Run tests and validate coverage
-        run: ./gradlew jacocoTestReport --no-daemon
-
-      - name: Run tests and validate coverage
+      - name: Validate coverage
         run: ./gradlew jacocoTestCoverageVerification --no-daemon
+
+      - name: Generate coverage report
+        run: ./gradlew jacocoTestReport --no-daemon
 
       - name: Upload Unit Tests Coverage Report
         uses: actions/upload-artifact@v3

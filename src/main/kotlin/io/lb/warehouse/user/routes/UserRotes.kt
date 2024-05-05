@@ -275,7 +275,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.validatePassword(
     } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
 }
 
-private suspend fun PipelineContext<*, ApplicationCall>.validateSession(userId: String) : Boolean {
+private suspend fun PipelineContext<*, ApplicationCall>.validateSession(userId: String): Boolean {
     val authenticatedUserId = call.sessions.get<WarehouseSession>()?.clientId
 
     if (userId != authenticatedUserId) {
@@ -289,7 +289,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.validateSession(userId: 
 private suspend fun PipelineContext<*, ApplicationCall>.validateEmail(
     userService: UserDatabaseService,
     email: String?
-) : Boolean {
+): Boolean {
     if (email != null && userService.isEmailAlreadyInUse(email)) {
         call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
         return false

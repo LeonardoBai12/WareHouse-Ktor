@@ -3,6 +3,7 @@ package io.lb.warehouse.withdraw.routes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
@@ -31,68 +32,70 @@ import java.sql.SQLException
  */
 fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
     routing {
-        post("/api/createWithdraw") {
-            val withdraw = call.receiveNullable<WithdrawCreateRequest>() ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
+        authenticate {
+            post("/api/createWithdraw") {
+                val withdraw = call.receiveNullable<WithdrawCreateRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+
+                try {
+                    val id = withdrawService.insertWithdraw(withdraw)
+                    call.respond(HttpStatusCode.Created, id)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.localizedMessage)
+                    return@post
+                }
             }
 
-            try {
-                val id = withdrawService.insertWithdraw(withdraw)
-                call.respond(HttpStatusCode.Created, id)
-            } catch (e: SQLException) {
-                call.respond(HttpStatusCode.Forbidden, e.localizedMessage)
-                return@post
-            }
-        }
-
-        get("/api/withdraw") {
-            val id = call.parameters["id"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-            val withdraw = withdrawService.getWithdrawById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no withdraws with such ID")
-                return@get
-            }
-            call.respond(HttpStatusCode.OK, withdraw)
-        }
-
-        get("/api/withdrawsCreatedByUser") {
-            try {
-                val userId = call.parameters["userId"] ?: run {
+            get("/api/withdraw") {
+                val id = call.parameters["id"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val withdraws = withdrawService.getWithdrawsByUserId(userId)
-
-                if (withdraws.isEmpty()) {
-                    call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                val withdraw = withdrawService.getWithdrawById(id) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no withdraws with such ID")
                     return@get
                 }
-
-                call.respond(HttpStatusCode.OK, withdraws)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                call.respond(HttpStatusCode.OK, withdraw)
             }
-        }
 
-        get("/api/withdrawsByWareId") {
-            try {
-                val wareId = call.parameters["wareId"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-                val withdraws = withdrawService.getWithdrawsByWareId(wareId)
+            get("/api/withdrawsCreatedByUser") {
+                try {
+                    val userId = call.parameters["userId"] ?: run {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
+                    }
+                    val withdraws = withdrawService.getWithdrawsByUserId(userId)
 
-                if (withdraws.isEmpty()) {
+                    if (withdraws.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                        return@get
+                    }
+
+                    call.respond(HttpStatusCode.OK, withdraws)
+                } catch (e: Exception) {
                     call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
-                    return@get
                 }
+            }
 
-                call.respond(HttpStatusCode.OK, withdraws)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No withdraws for such ware")
+            get("/api/withdrawsByWareId") {
+                try {
+                    val wareId = call.parameters["wareId"] ?: run {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
+                    }
+                    val withdraws = withdrawService.getWithdrawsByWareId(wareId)
+
+                    if (withdraws.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound, "No withdraws for such user")
+                        return@get
+                    }
+
+                    call.respond(HttpStatusCode.OK, withdraws)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.NotFound, "No withdraws for such ware")
+                }
             }
         }
     }

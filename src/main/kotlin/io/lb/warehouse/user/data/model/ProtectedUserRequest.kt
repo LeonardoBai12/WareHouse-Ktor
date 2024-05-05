@@ -8,6 +8,6 @@ import kotlinx.serialization.Serializable
  * @property password The user's password for authentication.
  */
 @Serializable
-data class DeleteUserRequest(
+data class ProtectedUserRequest(
     val password: String,
 )

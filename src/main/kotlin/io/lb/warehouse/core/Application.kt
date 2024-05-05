@@ -8,6 +8,7 @@ import io.lb.warehouse.core.plugins.configureDatabases
 import io.lb.warehouse.core.plugins.configureMonitoring
 import io.lb.warehouse.core.plugins.configureSerialization
 import io.lb.warehouse.core.plugins.configureSession
+import io.lb.warehouse.security.data.model.TokenConfig
 
 /**
  * Main function of the server.
@@ -25,9 +26,14 @@ fun main() {
  * Application module configuration.
  */
 fun Application.module() {
+    val config = TokenConfig.wareHouseTokenConfig(
+        config = environment.config,
+        embedded = true
+    )
+
     configureSerialization()
     configureMonitoring()
-    configureAuth()
     configureSession()
-    configureDatabases()
+    configureAuth(config)
+    configureDatabases(config)
 }

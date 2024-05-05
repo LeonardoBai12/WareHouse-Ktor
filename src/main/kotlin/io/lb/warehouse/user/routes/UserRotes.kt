@@ -3,6 +3,9 @@ package io.lb.warehouse.user.routes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.UserIdPrincipal
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.authentication
 import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.routing.delete
@@ -10,12 +13,22 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
+import io.ktor.server.sessions.clear
+import io.ktor.server.sessions.get
+import io.ktor.server.sessions.sessions
+import io.ktor.server.sessions.set
+import io.ktor.util.generateNonce
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.extensions.passwordCheck
-import io.lb.warehouse.user.data.model.DeleteUserRequest
+import io.lb.warehouse.core.session.WarehouseSession
+import io.lb.warehouse.security.data.model.TokenClaim
+import io.lb.warehouse.security.data.model.TokenConfig
+import io.lb.warehouse.security.generateToken
+import io.lb.warehouse.user.data.model.ProtectedUserRequest
 import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
+import io.lb.warehouse.user.data.model.UserUpdateRequest
 import io.lb.warehouse.user.data.service.UserDatabaseService
 
 /**
@@ -23,8 +36,11 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  *
  * **Routes documentations:**
  *
- * Create user:
- * [/api/createUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
+ * Sign up (Create user):
+ * [/api/signIn](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
+ *
+ * Sign in (Get auth token):
+ * [/api/login](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
  *
  * Get user by UUID:
  * [/api/user](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#e836f3e1-130e-48e1-8045-69d8e2c8f2b8)
@@ -38,15 +54,34 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  * Delete user:
  * [/api/deleteUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#44e9c25d-ef79-446b-8dca-be4934599061)
  */
-fun Application.userRoutes(userService: UserDatabaseService) {
+fun Application.userRoutes(
+    tokenConfig: TokenConfig,
+    userService: UserDatabaseService
+) {
     routing {
-        post("/api/createUser") {
+        post("/api/signUp") {
             val user = call.receiveNullable<UserCreateRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
+
+            call.sessions.get<WarehouseSession>()?.let {
+                call.respond(HttpStatusCode.Conflict, "There is already an user logged in.")
+                return@post
+            }
+
             if (userService.isEmailAlreadyInUse(user.email)) {
                 call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
+                return@post
+            }
+
+            if (user.userName.isBlank()) {
+                call.respond(HttpStatusCode.Conflict, "User must have a name.")
+                return@post
+            }
+
+            if (user.password.length < 8) {
+                call.respond(HttpStatusCode.Conflict, "Password must have more than 8 characters.")
                 return@post
             }
 
@@ -61,111 +96,197 @@ fun Application.userRoutes(userService: UserDatabaseService) {
             call.respond(HttpStatusCode.Created, userData.userId)
         }
 
-        get("/api/user") {
+        get("/api/login") {
             val userId = call.parameters["userId"] ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            userService.getUserById(userId)?.let {
-                call.respond(HttpStatusCode.OK, it.copy(password = null))
-            } ?: call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-        }
 
-        put("/api/updateUser") {
-            val userId = call.parameters["userId"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
+            call.sessions.get<WarehouseSession>()?.let {
+                call.respond(HttpStatusCode.Conflict, "There is already an user logged in.")
+                return@get
             }
 
             val storedUser = userService.getUserById(userId) ?: run {
                 call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-                return@put
+                return@get
             }
 
-            val user = call.receiveNullable<UserCreateRequest>() ?: run {
+            val request = call.receiveNullable<ProtectedUserRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
-                return@put
+                return@get
             }
 
-            if (userService.isEmailAlreadyInUse(user.email)) {
-                call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
-                return@put
-            }
-
-            user.password.takeIf { it.isEmpty() }?.let {
+            request.password.takeIf { it.isEmpty() }?.let {
                 call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-                return@put
+                return@get
             }
 
             storedUser.takeIf {
-                user.password.passwordCheck(it.password!!)
+                request.password.passwordCheck(it.password!!)
             }?.let {
-                val updatedUser = it.copy(
-                    userName = user.userName,
-                    email = user.email,
-                    profilePictureUrl = user.profilePictureUrl,
+                val token = generateToken(
+                    config = tokenConfig,
+                    TokenClaim(
+                        name = "userId",
+                        value = userId
+                    )
                 )
-                userService.updateUser(updatedUser)
-                call.respond(HttpStatusCode.OK, userId)
+
+                call.sessions.set(
+                    WarehouseSession(
+                        clientId = userId,
+                        sessionId = generateNonce()
+                    )
+                )
+
+                call.respond(HttpStatusCode.OK, token)
             } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
         }
 
-        put("/api/updatePassword") {
-            val userId = call.parameters["userId"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
+        authenticate {
+            get("/api/user") {
+                val userId = call.parameters["userId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                userService.getUserById(userId)?.let {
+                    call.respond(HttpStatusCode.OK, it.copy(password = null))
+                } ?: call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
             }
 
-            val storedUser = userService.getUserById(userId) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-                return@put
+            put("/api/updateUser") {
+                val userId = call.parameters["userId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                val authenticatedUserId = call.sessions.get<WarehouseSession>()?.clientId
+
+                if (userId != authenticatedUserId) {
+                    call.respond(HttpStatusCode.Unauthorized, "You are not authorized to update this user.")
+                    return@put
+                }
+
+                val storedUser = userService.getUserById(userId) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
+                    return@put
+                }
+
+                val user = call.receiveNullable<UserUpdateRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                if (user.email != null && userService.isEmailAlreadyInUse(user.email)) {
+                    call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
+                    return@put
+                }
+
+                user.password.takeIf { it.isEmpty() }?.let {
+                    call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+                    return@put
+                }
+
+                storedUser.takeIf {
+                    user.password.passwordCheck(it.password!!)
+                }?.let {
+                    val updatedUser = it.copy(
+                        userName = user.userName ?: it.userName,
+                        email = user.email ?: it.email,
+                        profilePictureUrl = user.profilePictureUrl ?: it.profilePictureUrl,
+                    )
+                    userService.updateUser(updatedUser)
+                    call.respond(HttpStatusCode.OK, userId)
+                } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
             }
 
-            val request = call.receiveNullable<UpdatePasswordRequest>() ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
+            put("/api/updatePassword") {
+                val userId = call.parameters["userId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                val authenticatedUserId = call.sessions.get<WarehouseSession>()?.clientId
+
+                if (userId != authenticatedUserId) {
+                    call.respond(HttpStatusCode.Unauthorized, "You are not authorized to update this user.")
+                    return@put
+                }
+
+                val storedUser = userService.getUserById(userId) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
+                    return@put
+                }
+
+                val request = call.receiveNullable<UpdatePasswordRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                request.password.takeIf { it.isEmpty() }?.let {
+                    call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+                    return@put
+                }
+
+                if (request.newPassword.length < 8) {
+                    call.respond(HttpStatusCode.Conflict, "Password must have more than 8 characters.")
+                    return@put
+                }
+
+                storedUser.takeIf {
+                    request.password.passwordCheck(it.password!!)
+                }?.let {
+                    userService.updatePassword(userId, request.newPassword.encrypt()!!)
+                    call.respond(HttpStatusCode.OK, userId)
+                } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
             }
 
-            request.password.takeIf { it.isEmpty() }?.let {
-                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-                return@put
+            delete("/api/deleteUser") {
+                val userId = call.parameters["userId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                }
+
+                val authenticatedUserId = call.sessions.get<WarehouseSession>()?.clientId
+
+                if (userId != authenticatedUserId) {
+                    call.respond(HttpStatusCode.Unauthorized, "You are not authorized to delete this user.")
+                    return@delete
+                }
+
+                val storedUser = userService.getUserById(userId) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
+                    return@delete
+                }
+
+                val request = call.receiveNullable<ProtectedUserRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                }
+
+                request.password.takeIf { it.isEmpty() }?.let {
+                    call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+                    return@delete
+                }
+
+                storedUser.takeIf {
+                    request.password.passwordCheck(it.password!!)
+                }?.let {
+                    userService.deleteUser(userId)
+                    call.respond(HttpStatusCode.OK, userId)
+                } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
             }
 
-            storedUser.takeIf {
-                request.password.passwordCheck(it.password!!)
-            }?.let {
-                userService.updatePassword(userId, request.newPassword.encrypt()!!)
-                call.respond(HttpStatusCode.OK, userId)
-            } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-        }
+            get("/api/logout") {
+                call.sessions.get<WarehouseSession>() ?: run {
+                    call.respond(HttpStatusCode.Conflict, "There is no user logged in.")
+                    return@get
+                }
 
-        delete("/api/deleteUser") {
-            val userId = call.parameters["userId"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
+                call.sessions.clear<WarehouseSession>()
+                call.respond(HttpStatusCode.OK)
             }
-
-            val storedUser = userService.getUserById(userId) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-                return@delete
-            }
-
-            val request = call.receiveNullable<DeleteUserRequest>() ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            }
-
-            request.password.takeIf { it.isEmpty() }?.let {
-                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-                return@delete
-            }
-
-            storedUser.takeIf {
-                request.password.passwordCheck(it.password!!)
-            }?.let {
-                userService.deleteUser(userId)
-                call.respond(HttpStatusCode.OK, userId)
-            } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
         }
     }
 }

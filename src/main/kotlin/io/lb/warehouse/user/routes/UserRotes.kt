@@ -39,8 +39,11 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  * Sign up (Create user):
  * [/api/signIn](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
  *
- * Sign in (Get auth token):
- * [/api/login](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#a61f2df0-1f61-4537-b458-28b755bc9a75)
+ * Login (Get auth token):
+ * [/api/login](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#bea84de4-64d3-45c3-a2cc-35deef980dc7)
+ *
+ * Logout:
+ * [/api/login](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#dc56397a-756f-4b97-b4db-a7fad39499a8)
  *
  * Get user by UUID:
  * [/api/user](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#e836f3e1-130e-48e1-8045-69d8e2c8f2b8)

@@ -2,21 +2,12 @@ package io.lb.warehouse.deposit.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.basicAuth
-import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.gson.gson
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.deposit.data.model.DepositData

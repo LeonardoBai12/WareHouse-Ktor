@@ -37,7 +37,6 @@ fun ApplicationTestBuilder.setupApplication(block: Application.() -> Unit) {
     }
 }
 
-
 fun Application.setupApplication() {
     configureAuth()
 }
@@ -75,7 +74,6 @@ fun Application.configureSession(
         }
     }
 }
-
 
 fun HttpRequestBuilder.setupRequest() {
     header(HttpHeaders.ContentType, ContentType.Application.Json.toString())

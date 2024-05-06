@@ -8,6 +8,9 @@ import java.sql.Date
 
 /**
  * Generates a JWT Bearer Token for the new user session.
+ *
+ * @param config Data class representing token configurations.
+ * @param claims Data class representing a request to generate a tokem.
  */
 fun generateToken(config: TokenConfig, vararg claims: TokenClaim): String {
     var token = JWT.create()

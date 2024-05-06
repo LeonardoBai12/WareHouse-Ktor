@@ -6,6 +6,11 @@ import java.util.Properties
 
 /**
  * Data class representing token configurations.
+ *
+ * @param issuer Domain of the tokens to be generated.
+ * @param audience Audience of the tokens to be generated.
+ * @param expiresIn Timestamp in millis of the experitation date of the token.
+ * @param secret Secret key of the token configuration.
  */
 data class TokenConfig(
     val issuer: String,

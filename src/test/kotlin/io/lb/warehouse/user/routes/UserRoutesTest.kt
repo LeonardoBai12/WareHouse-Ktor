@@ -989,7 +989,12 @@ class UserRoutesTest {
                 userId
             )
             userRoutes(
-                TokenConfig.wareHouseTokenConfig(environment.config, true),
+                TokenConfig(
+                    issuer = "http://0.0.0.0:8080",
+                    audience = "users",
+                    expiresIn = 365L * 1000L * 60L * 60L * 24L,
+                    secret = "secret"
+                ),
                 service
             )
         }

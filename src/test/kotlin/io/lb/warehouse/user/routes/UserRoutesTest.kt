@@ -12,14 +12,14 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.gson.gson
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.core.extensions.encrypt
+import io.lb.warehouse.security.data.model.TokenConfig
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
+import io.lb.warehouse.util.setupApplication
+import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -41,7 +41,7 @@ class UserRoutesTest {
         coEvery { service.isEmailAlreadyInUse(any()) } returns true
 
         val response = client.post("/api/createUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -62,7 +62,7 @@ class UserRoutesTest {
         setup()
 
         val response = client.post("/api/createUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -86,7 +86,7 @@ class UserRoutesTest {
         coEvery { service.createUser(any()) } returns 1
 
         val response = client.post("/api/createUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -110,7 +110,7 @@ class UserRoutesTest {
         coEvery { service.getUserById(uuid) } returns null
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -132,7 +132,7 @@ class UserRoutesTest {
         setup()
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -162,7 +162,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -193,7 +193,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -224,7 +224,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -255,7 +255,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -287,7 +287,7 @@ class UserRoutesTest {
         coEvery { service.updateUser(any()) } returns 1
 
         val response = client.put("/api/updateUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -317,7 +317,7 @@ class UserRoutesTest {
         )
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -344,7 +344,7 @@ class UserRoutesTest {
         )
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -371,7 +371,7 @@ class UserRoutesTest {
         )
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -390,7 +390,7 @@ class UserRoutesTest {
         setup()
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -404,7 +404,7 @@ class UserRoutesTest {
         coEvery { service.getUserById(uuid) } returns null
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
         }
 
@@ -425,7 +425,7 @@ class UserRoutesTest {
         coEvery { service.deleteUser(any()) } returns 1
 
         val response = client.delete("/api/deleteUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -444,7 +444,7 @@ class UserRoutesTest {
         setup()
 
         val response = client.get("/api/user") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -458,7 +458,7 @@ class UserRoutesTest {
         coEvery { service.getUserById(uuid) } returns null
 
         val response = client.get("/api/user") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
         }
 
@@ -478,7 +478,7 @@ class UserRoutesTest {
         )
 
         val response = client.get("/api/user") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
         }
 
@@ -490,7 +490,7 @@ class UserRoutesTest {
         setup()
 
         val response = client.put("/api/updatePassword") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -517,7 +517,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updatePassword") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -545,7 +545,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updatePassword") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -573,7 +573,7 @@ class UserRoutesTest {
         )
 
         val response = client.put("/api/updatePassword") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -602,7 +602,7 @@ class UserRoutesTest {
         coEvery { service.updatePassword(any(), any()) } returns 1
 
         val response = client.put("/api/updatePassword") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", uuid)
             setBody(
                 """
@@ -617,14 +617,19 @@ class UserRoutesTest {
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
+    // Login
+    // Logout
+    // Sign Up (create mudou de nome)
+    // Novas regras de update
+    // Novas regras de update password
+    // Novas regras na deleção
+
     private fun ApplicationTestBuilder.setup() {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
-            userRoutes(service)
+        setupApplication {
+            userRoutes(
+                TokenConfig.wareHouseTokenConfig(environment.config, true),
+                service
+            )
         }
     }
 }

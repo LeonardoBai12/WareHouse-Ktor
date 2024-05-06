@@ -2,6 +2,9 @@ package io.lb.warehouse.deposit.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.basicAuth
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -17,6 +20,8 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.deposit.data.model.DepositData
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.util.setupApplication
+import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -36,7 +41,7 @@ class DepositRoutesTest {
         setup()
 
         val response = client.post("/api/createDeposit") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -57,7 +62,7 @@ class DepositRoutesTest {
         coEvery { service.insertDeposit(any()) } returns ""
 
         val response = client.post("/api/createDeposit") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -77,7 +82,7 @@ class DepositRoutesTest {
         setup()
 
         val response = client.get("/api/deposit") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -91,7 +96,7 @@ class DepositRoutesTest {
         coEvery { service.getDepositById(uuid) } returns null
 
         val response = client.get("/api/deposit") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
@@ -114,7 +119,7 @@ class DepositRoutesTest {
         )
 
         val response = client.get("/api/deposit") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
@@ -126,7 +131,7 @@ class DepositRoutesTest {
         setup()
 
         val response = client.get("/api/depositsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -140,7 +145,7 @@ class DepositRoutesTest {
         coEvery { service.getDepositsByUserId(userId) } returns listOf()
 
         val response = client.get("/api/depositsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
@@ -165,7 +170,7 @@ class DepositRoutesTest {
         )
 
         val response = client.get("/api/depositsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
@@ -177,7 +182,7 @@ class DepositRoutesTest {
         setup()
 
         val response = client.get("/api/depositsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -191,7 +196,7 @@ class DepositRoutesTest {
         coEvery { service.getDepositsByWareId(wareId) } returns listOf()
 
         val response = client.get("/api/depositsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("wareId", wareId)
         }
 
@@ -216,7 +221,7 @@ class DepositRoutesTest {
         )
 
         val response = client.get("/api/depositsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("wareId", wareId)
         }
 
@@ -224,12 +229,7 @@ class DepositRoutesTest {
     }
 
     private fun ApplicationTestBuilder.setup() {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
+        setupApplication {
             depositRoutes(service)
         }
     }

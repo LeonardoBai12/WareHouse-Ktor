@@ -7,7 +7,6 @@ import io.ktor.server.sessions.cookie
 import io.lb.warehouse.core.session.WarehouseSession
 
 private const val SESSION_NAME = "WareHouseSessions"
-private const val USER_ID = "userId"
 
 fun Application.configureSession() {
     install(Sessions) {

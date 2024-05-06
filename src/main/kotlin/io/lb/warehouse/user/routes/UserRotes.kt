@@ -73,7 +73,7 @@ fun Application.userRoutes(
                 return@post
             }
 
-            if (validateEmail(userService, user.email)) {
+            if (!validateEmail(userService, user.email)) {
                 return@post
             }
 
@@ -109,24 +109,16 @@ fun Application.userRoutes(
                 return@get
             }
 
-            val storedUser = userService.getUserById(userId) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-                return@get
-            }
-
             val request = call.receiveNullable<ProtectedUserRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
 
-            request.password.takeIf { it.isEmpty() }?.let {
-                call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-                return@get
-            }
-
-            storedUser.takeIf {
-                request.password.passwordCheck(it.password!!)
-            }?.let {
+            validatePassword(
+                userService = userService,
+                userId = userId,
+                password = request.password,
+            ) {
                 val token = generateToken(
                     config = tokenConfig,
                     TokenClaim(
@@ -143,7 +135,7 @@ fun Application.userRoutes(
                 )
 
                 call.respond(HttpStatusCode.OK, token)
-            } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
+            }
         }
 
         authenticate {
@@ -172,7 +164,7 @@ fun Application.userRoutes(
                     return@put
                 }
 
-                if (validateEmail(userService, user.email)) {
+                if (!validateEmail(userService, user.email)) {
                     return@put
                 }
 

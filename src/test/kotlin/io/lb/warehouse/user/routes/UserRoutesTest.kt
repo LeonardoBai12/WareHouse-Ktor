@@ -4,13 +4,11 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
@@ -18,6 +16,7 @@ import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.security.data.model.TokenConfig
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
+import io.lb.warehouse.util.configureSession
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
@@ -55,6 +54,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
+        assertThat(response.bodyAsText()).isEqualTo("Email already in use by another user.")
     }
 
     @Test
@@ -125,6 +125,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no user with such ID")
     }
 
     @Test
@@ -177,6 +178,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
+        assertThat(response.bodyAsText()).isEqualTo("Email already in use by another user.")
     }
 
     @Test
@@ -208,6 +210,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -239,6 +242,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -329,6 +333,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -356,6 +361,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -406,9 +412,17 @@ class UserRoutesTest {
         val response = client.delete("/api/deleteUser") {
             setupRequest()
             parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "password": "newPassword"
+                }
+                """.trimIndent()
+            )
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no user with such ID")
     }
 
     @Test
@@ -463,6 +477,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no user with such ID")
     }
 
     @Test
@@ -485,6 +500,7 @@ class UserRoutesTest {
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
+    // Novas regras de update password
     @Test
     fun `Updating password without id param, should return BadRequest`() = testApplication {
         setup()
@@ -530,6 +546,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -558,6 +575,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid password")
     }
 
     @Test
@@ -621,11 +639,11 @@ class UserRoutesTest {
     // Logout
     // Sign Up (create mudou de nome)
     // Novas regras de update
-    // Novas regras de update password
     // Novas regras na deleção
 
-    private fun ApplicationTestBuilder.setup() {
+    private fun ApplicationTestBuilder.setup(bypass: Boolean = true) {
         setupApplication {
+            configureSession(bypass)
             userRoutes(
                 TokenConfig.wareHouseTokenConfig(environment.config, true),
                 service

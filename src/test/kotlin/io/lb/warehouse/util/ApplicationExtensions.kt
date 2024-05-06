@@ -52,7 +52,10 @@ fun Application.configureAuth() {
     }
 }
 
-fun Application.configureSession(bypass: Boolean = true) {
+fun Application.configureSession(
+    bypass: Boolean = true,
+    userId: String = ""
+) {
     install(Sessions) {
         cookie<WarehouseSession>("WareHouse-Test")
     }
@@ -60,7 +63,8 @@ fun Application.configureSession(bypass: Boolean = true) {
         call.sessions.get<WarehouseSession>() ?: run {
             if (!bypass) return@intercept
 
-            val clientId = call.parameters["userId"] ?: ""
+            val clientId = userId.ifBlank { call.parameters["userId"] ?: "" }
+
             call.sessions.set(
                 WarehouseSession(
                     clientId = clientId,

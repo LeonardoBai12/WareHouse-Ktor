@@ -35,11 +35,11 @@ class UserRoutesTest {
 
     @Test
     fun `Creating user with an email already in use, should return Conflict`() = testApplication {
-        setup()
+        setup(bypass = false)
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns true
 
-        val response = client.post("/api/createUser") {
+        val response = client.post("/api/signUp") {
             setupRequest()
             setBody(
                 """
@@ -59,9 +59,9 @@ class UserRoutesTest {
 
     @Test
     fun `Creating user with typos, should return BadRequest`() = testApplication {
-        setup()
+        setup(bypass = false)
 
-        val response = client.post("/api/createUser") {
+        val response = client.post("/api/signUp") {
             setupRequest()
             setBody(
                 """
@@ -80,12 +80,12 @@ class UserRoutesTest {
 
     @Test
     fun `Creating user correctly, should return Created`() = testApplication {
-        setup()
+        setup(bypass = false)
 
         coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.createUser(any()) } returns 1
 
-        val response = client.post("/api/createUser") {
+        val response = client.post("/api/signUp") {
             setupRequest()
             setBody(
                 """
@@ -100,6 +100,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Created)
+        client.get("/api/logout")
     }
 
     @Test
@@ -108,6 +109,7 @@ class UserRoutesTest {
         setup()
 
         coEvery { service.getUserById(uuid) } returns null
+        coEvery { service.isEmailAlreadyInUse(any()) } returns false
 
         val response = client.put("/api/updateUser") {
             setupRequest()
@@ -500,7 +502,6 @@ class UserRoutesTest {
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
-    // Novas regras de update password
     @Test
     fun `Updating password without id param, should return BadRequest`() = testApplication {
         setup()
@@ -635,15 +636,15 @@ class UserRoutesTest {
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
 
-    // Login
-    // Logout
-    // Sign Up (create mudou de nome)
-    // Novas regras de update
-    // Novas regras na deleção
-
-    private fun ApplicationTestBuilder.setup(bypass: Boolean = true) {
+    private fun ApplicationTestBuilder.setup(
+        bypass: Boolean = true,
+        userId: String = ""
+    ) {
         setupApplication {
-            configureSession(bypass)
+            configureSession(
+                bypass,
+                userId
+            )
             userRoutes(
                 TokenConfig.wareHouseTokenConfig(environment.config, true),
                 service

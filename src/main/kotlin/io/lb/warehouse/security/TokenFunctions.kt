@@ -6,6 +6,9 @@ import io.lb.warehouse.security.data.model.TokenClaim
 import io.lb.warehouse.security.data.model.TokenConfig
 import java.sql.Date
 
+/**
+ * Generates a JWT Bearer Token for the new user session.
+ */
 fun generateToken(config: TokenConfig, vararg claims: TokenClaim): String {
     var token = JWT.create()
         .withAudience(config.audience)

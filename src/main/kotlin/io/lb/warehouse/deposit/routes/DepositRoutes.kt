@@ -29,6 +29,8 @@ import java.sql.SQLException
  *
  * Get deposits by ware UUID:
  * [/api/depositsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#03bbb3f7-1a9d-452d-965c-388e73a4eb59)
+ *
+ * @param depositService Service class for interacting with the deposit table in the PostgreSQL database.
  */
 fun Application.depositRoutes(depositService: DepositDatabaseService) {
     routing {

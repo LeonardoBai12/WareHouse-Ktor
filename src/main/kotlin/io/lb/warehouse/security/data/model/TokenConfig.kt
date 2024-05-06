@@ -4,6 +4,9 @@ import io.ktor.server.config.ApplicationConfig
 import java.io.FileInputStream
 import java.util.Properties
 
+/**
+ * Data class representing token configurations.
+ */
 data class TokenConfig(
     val issuer: String,
     val audience: String,
@@ -11,6 +14,14 @@ data class TokenConfig(
     val secret: String
 ) {
     companion object {
+        /**
+         * Default TokenConfig for the WareHouse project.
+         *
+         * @param config Represents an application config node.
+         * @param embedded Representis whether the server is embbeded.
+         *
+         * @return A TokenConfig instance with the default values for the WareHouse project.
+         */
         fun wareHouseTokenConfig(
             config: ApplicationConfig,
             embedded: Boolean

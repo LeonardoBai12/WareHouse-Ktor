@@ -34,6 +34,8 @@ import java.sql.SQLException
  *
  * Delete ware:
  * [/api/deleteWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0e7b55ba-0ade-4e5b-bcb5-7ae7ea665204)
+ *
+ * @param wareService Service class for interacting with the ware table in the PostgreSQL database.
  */
 fun Application.wareRoutes(wareService: WareDatabaseService) {
     routing {

@@ -29,6 +29,8 @@ import java.sql.SQLException
  *
  * Get withdraws by ware UUID:
  * [/api/withdrawsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#c9a18637-a85d-42d3-88c7-4e620065b552)
+ *
+ * @param withdrawService Service class for interacting with the withdrawal table in the PostgreSQL database.
  */
 fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
     routing {

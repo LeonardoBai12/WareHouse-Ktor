@@ -56,6 +56,9 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  *
  * Delete user:
  * [/api/deleteUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#44e9c25d-ef79-446b-8dca-be4934599061)
+ *
+ * @param tokenConfig Data class representing token configurations.
+ * @param userService Service class for interacting with the user data table in the PostgreSQL database.
  */
 fun Application.userRoutes(
     tokenConfig: TokenConfig,

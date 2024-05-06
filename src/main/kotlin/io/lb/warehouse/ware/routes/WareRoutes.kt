@@ -59,7 +59,7 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                     return@get
                 }
                 val ware = wareService.getWareById(id) ?: run {
-                    call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
                     return@get
                 }
                 call.respond(HttpStatusCode.OK, ware)
@@ -74,13 +74,13 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                     val wares = wareService.getWaresByUserId(userId)
 
                     if (wares.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound, "No wares for such user")
+                        call.respond(HttpStatusCode.NotFound, "There is no wares for such user")
                         return@get
                     }
 
                     call.respond(HttpStatusCode.OK, wares)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.NotFound, "No wares for such user")
+                    call.respond(HttpStatusCode.NotFound, "There is no wares for such user")
                 }
             }
 
@@ -91,7 +91,7 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                 }
 
                 wareService.getWareById(id) ?: run {
-                    call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
                     return@put
                 }
 
@@ -116,7 +116,7 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                 }
 
                 wareService.getWareById(id) ?: run {
-                    call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
                     return@delete
                 }
 

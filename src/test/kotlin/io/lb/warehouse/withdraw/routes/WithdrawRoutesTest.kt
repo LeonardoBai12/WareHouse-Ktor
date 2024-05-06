@@ -7,6 +7,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -98,6 +99,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws with such ID")
     }
 
     @Test
@@ -147,6 +149,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such user")
     }
 
     @Test
@@ -198,6 +201,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such ware")
     }
 
     @Test

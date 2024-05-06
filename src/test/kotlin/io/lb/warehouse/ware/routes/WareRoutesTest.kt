@@ -9,6 +9,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -116,6 +117,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -212,6 +214,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -241,6 +244,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+        assertThat(response.bodyAsText()).isEqualTo("Ware deleted successfully")
     }
 
     @Test
@@ -267,6 +271,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -321,6 +326,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares for such user")
     }
 
     @Test

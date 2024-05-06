@@ -29,7 +29,7 @@ Contains the model classes to request withdraw operations.
 # Package io.lb.warehouse.user.data.model
 Contains the model classes to request user operations.
 
-# Package io.lb.warehouse.ware.security.data.model
+# Package io.lb.warehouse.security.data.model
 Contains the model classes to request token operations.
 
 # Package io.lb.warehouse.deposit.data.service

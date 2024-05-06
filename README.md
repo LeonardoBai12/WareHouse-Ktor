@@ -1,6 +1,6 @@
 # WareHouse-Ktor
 
-WareHouse is a ware management Ktor server.
+WareHouse is a Ktor server to manage wares deposit, withdraws and their stocks, using PostgreSQL to persist data.
 
 ## Description
 

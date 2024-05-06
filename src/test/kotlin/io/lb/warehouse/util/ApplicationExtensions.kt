@@ -59,10 +59,11 @@ fun Application.configureSession(
     install(Sessions) {
         cookie<WarehouseSession>("WareHouse-Test")
     }
+
+    if (!bypass) return
+
     intercept(ApplicationCallPipeline.Call) {
         call.sessions.get<WarehouseSession>() ?: run {
-            if (!bypass) return@intercept
-
             val clientId = userId.ifBlank { call.parameters["userId"] ?: "" }
 
             call.sessions.set(

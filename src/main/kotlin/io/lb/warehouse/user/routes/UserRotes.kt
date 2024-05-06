@@ -164,6 +164,11 @@ fun Application.userRoutes(
                     return@put
                 }
 
+                if (user.userName != null && user.userName.isBlank()) {
+                    call.respond(HttpStatusCode.Conflict, "User must have a name.")
+                    return@put
+                }
+
                 if (!validateEmail(userService, user.email)) {
                     return@put
                 }
@@ -194,6 +199,11 @@ fun Application.userRoutes(
 
                 val request = call.receiveNullable<UpdatePasswordRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                if (request.newPassword.length < 8) {
+                    call.respond(HttpStatusCode.Conflict, "Password must have more than 8 characters.")
                     return@put
                 }
 
@@ -231,11 +241,6 @@ fun Application.userRoutes(
             }
 
             get("/api/logout") {
-                call.sessions.get<WarehouseSession>() ?: run {
-                    call.respond(HttpStatusCode.Conflict, "There is no user logged in.")
-                    return@get
-                }
-
                 call.sessions.clear<WarehouseSession>()
                 call.respond(HttpStatusCode.OK)
             }

@@ -63,6 +63,8 @@ fun Build_gradle.fileTreeExclusions() =
             "**/session/**",
             "**/model/**",
             "**/plugins/**",
+            "**/security/**",
+            "**/Application.kt",
         )
     }
 

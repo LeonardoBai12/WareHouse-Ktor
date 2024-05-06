@@ -22,6 +22,11 @@ The application is built using the following technologies:
 * [GitHub Actions](https://docs.github.com/pt/actions/learn-github-actions) for Continuous Integration/Continuous Deployment (CI/CD).
 * [Dokka](https://github.com/Kotlin/dokka) for generating documentation.
 
+## Security
+
+To ensure data security, we mandate the use of JWT Bearer tokens. Users are restricted to modifying their own data and
+must be logged in to access the database.
+
 ## Quality Assurance
 
 To ensure high-quality code, the following tools and processes are used before merging any pull requests:

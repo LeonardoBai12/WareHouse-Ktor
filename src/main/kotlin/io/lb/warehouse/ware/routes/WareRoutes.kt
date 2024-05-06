@@ -3,6 +3,7 @@ package io.lb.warehouse.ware.routes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
 import io.ktor.server.request.receiveNullable
 import io.ktor.server.response.respond
 import io.ktor.server.routing.delete
@@ -33,93 +34,97 @@ import java.sql.SQLException
  *
  * Delete ware:
  * [/api/deleteWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0e7b55ba-0ade-4e5b-bcb5-7ae7ea665204)
+ *
+ * @param wareService Service class for interacting with the ware table in the PostgreSQL database.
  */
 fun Application.wareRoutes(wareService: WareDatabaseService) {
     routing {
-        post("/api/createWare") {
-            val ware = call.receiveNullable<WareCreateRequest>() ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
+        authenticate {
+            post("/api/createWare") {
+                val ware = call.receiveNullable<WareCreateRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+
+                try {
+                    val id = wareService.insertWare(ware)
+                    call.respond(HttpStatusCode.Created, id)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                    return@post
+                }
             }
 
-            try {
-                val id = wareService.insertWare(ware)
-                call.respond(HttpStatusCode.Created, id)
-            } catch (e: SQLException) {
-                call.respond(HttpStatusCode.Forbidden, e.message.toString())
-                return@post
-            }
-        }
-
-        get("/api/ware") {
-            val id = call.parameters["id"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-            val ware = wareService.getWareById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
-                return@get
-            }
-            call.respond(HttpStatusCode.OK, ware)
-        }
-
-        get("/api/waresCreatedByUser") {
-            try {
-                val userId = call.parameters["userId"] ?: run {
+            get("/api/ware") {
+                val id = call.parameters["id"] ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val wares = wareService.getWaresByUserId(userId)
-
-                if (wares.isEmpty()) {
-                    call.respond(HttpStatusCode.NotFound, "No wares for such user")
+                val ware = wareService.getWareById(id) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
                     return@get
                 }
-
-                call.respond(HttpStatusCode.OK, wares)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound, "No wares for such user")
-            }
-        }
-
-        put("/api/updateWare") {
-            val id = call.parameters["id"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
+                call.respond(HttpStatusCode.OK, ware)
             }
 
-            wareService.getWareById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
-                return@put
+            get("/api/waresCreatedByUser") {
+                try {
+                    val userId = call.parameters["userId"] ?: run {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
+                    }
+                    val wares = wareService.getWaresByUserId(userId)
+
+                    if (wares.isEmpty()) {
+                        call.respond(HttpStatusCode.NotFound, "There is no wares for such user")
+                        return@get
+                    }
+
+                    call.respond(HttpStatusCode.OK, wares)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.NotFound, "There is no wares for such user")
+                }
             }
 
-            val ware = call.receiveNullable<WareCreateRequest>() ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
+            put("/api/updateWare") {
+                val id = call.parameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                wareService.getWareById(id) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
+                    return@put
+                }
+
+                val ware = call.receiveNullable<WareCreateRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
+
+                try {
+                    wareService.updateWare(id, ware)
+                    call.respond(HttpStatusCode.OK, id)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                    return@put
+                }
             }
 
-            try {
-                wareService.updateWare(id, ware)
-                call.respond(HttpStatusCode.OK, id)
-            } catch (e: SQLException) {
-                call.respond(HttpStatusCode.Forbidden, e.message.toString())
-                return@put
-            }
-        }
+            delete("/api/deleteWare") {
+                val id = call.parameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@delete
+                }
 
-        delete("/api/deleteWare") {
-            val id = call.parameters["id"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            }
+                wareService.getWareById(id) ?: run {
+                    call.respond(HttpStatusCode.NotFound, "There is no wares with such ID")
+                    return@delete
+                }
 
-            wareService.getWareById(id) ?: run {
-                call.respond(HttpStatusCode.NotFound, "There is no ware with such ID")
-                return@delete
+                wareService.deleteWare(id)
+                call.respond(HttpStatusCode.OK, "Ware deleted successfully")
             }
-
-            wareService.deleteWare(id)
-            call.respond(HttpStatusCode.OK, "Ware deleted successfully")
         }
     }
 }

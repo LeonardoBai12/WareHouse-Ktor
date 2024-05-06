@@ -4,19 +4,16 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.gson.gson
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
+import io.lb.warehouse.util.setupApplication
+import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.service.WareDatabaseService
 import io.mockk.coEvery
@@ -38,7 +35,7 @@ class WareRoutesTest {
         setup()
 
         val response = client.post("/api/createWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -65,7 +62,7 @@ class WareRoutesTest {
         coEvery { service.insertWare(any()) } returns ""
 
         val response = client.post("/api/createWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -94,7 +91,7 @@ class WareRoutesTest {
         coEvery { service.getWareById(uuid) } returns null
 
         val response = client.put("/api/updateWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
             setBody(
                 """
@@ -114,6 +111,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -121,7 +119,7 @@ class WareRoutesTest {
         setup()
 
         val response = client.put("/api/updateWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -164,7 +162,7 @@ class WareRoutesTest {
         coEvery { service.updateWare(any(), any()) } returns 1
 
         val response = client.put("/api/updateWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
             setBody(
                 """
@@ -191,7 +189,7 @@ class WareRoutesTest {
         setup()
 
         val response = client.delete("/api/deleteWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -205,11 +203,12 @@ class WareRoutesTest {
         coEvery { service.getWareById(uuid) } returns null
 
         val response = client.delete("/api/deleteWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -234,11 +233,12 @@ class WareRoutesTest {
         coEvery { service.deleteWare(any()) } returns 1
 
         val response = client.delete("/api/deleteWare") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+        assertThat(response.bodyAsText()).isEqualTo("Ware deleted successfully")
     }
 
     @Test
@@ -246,7 +246,7 @@ class WareRoutesTest {
         setup()
 
         val response = client.get("/api/ware") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -260,11 +260,12 @@ class WareRoutesTest {
         coEvery { service.getWareById(uuid) } returns null
 
         val response = client.get("/api/ware") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
     }
 
     @Test
@@ -288,7 +289,7 @@ class WareRoutesTest {
         )
 
         val response = client.get("/api/ware") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
@@ -300,7 +301,7 @@ class WareRoutesTest {
         setup()
 
         val response = client.get("/api/waresCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -314,11 +315,12 @@ class WareRoutesTest {
         coEvery { service.getWaresByUserId(userId) } returns listOf()
 
         val response = client.get("/api/waresCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no wares for such user")
     }
 
     @Test
@@ -344,7 +346,7 @@ class WareRoutesTest {
         )
 
         val response = client.get("/api/waresCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
@@ -352,12 +354,7 @@ class WareRoutesTest {
     }
 
     private fun ApplicationTestBuilder.setup() {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
+        setupApplication {
             wareRoutes(service)
         }
     }

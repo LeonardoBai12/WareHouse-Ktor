@@ -3,18 +3,15 @@ package io.lb.warehouse.withdraw.routes
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.gson.gson
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
+import io.lb.warehouse.util.setupApplication
+import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
 import io.mockk.coEvery
@@ -36,7 +33,7 @@ class WithdrawRoutesTest {
         setup()
 
         val response = client.post("/api/createWithdraw") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -57,7 +54,7 @@ class WithdrawRoutesTest {
         coEvery { service.insertWithdraw(any()) } returns ""
 
         val response = client.post("/api/createWithdraw") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             setBody(
                 """
                 {
@@ -77,7 +74,7 @@ class WithdrawRoutesTest {
         setup()
 
         val response = client.get("/api/withdraw") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -91,11 +88,12 @@ class WithdrawRoutesTest {
         coEvery { service.getWithdrawById(uuid) } returns null
 
         val response = client.get("/api/withdraw") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws with such ID")
     }
 
     @Test
@@ -114,7 +112,7 @@ class WithdrawRoutesTest {
         )
 
         val response = client.get("/api/withdraw") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("id", uuid)
         }
 
@@ -126,7 +124,7 @@ class WithdrawRoutesTest {
         setup()
 
         val response = client.get("/api/withdrawsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -140,11 +138,12 @@ class WithdrawRoutesTest {
         coEvery { service.getWithdrawsByUserId(userId) } returns listOf()
 
         val response = client.get("/api/withdrawsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such user")
     }
 
     @Test
@@ -165,7 +164,7 @@ class WithdrawRoutesTest {
         )
 
         val response = client.get("/api/withdrawsCreatedByUser") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("userId", userId)
         }
 
@@ -177,7 +176,7 @@ class WithdrawRoutesTest {
         setup()
 
         val response = client.get("/api/withdrawsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
@@ -191,11 +190,12 @@ class WithdrawRoutesTest {
         coEvery { service.getWithdrawsByWareId(wareId) } returns listOf()
 
         val response = client.get("/api/withdrawsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("wareId", wareId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such ware")
     }
 
     @Test
@@ -216,7 +216,7 @@ class WithdrawRoutesTest {
         )
 
         val response = client.get("/api/withdrawsByWareId") {
-            header(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            setupRequest()
             parameter("wareId", wareId)
         }
 
@@ -224,12 +224,7 @@ class WithdrawRoutesTest {
     }
 
     private fun ApplicationTestBuilder.setup() {
-        install(ContentNegotiation) {
-            json()
-            gson {
-            }
-        }
-        application {
+        setupApplication {
             withdrawRoutes(service)
         }
     }

@@ -109,6 +109,7 @@ class DepositRoutesTest {
             quantity = 500.0,
             userId = userId,
             wareId = wareId,
+            timestamp = "2024-05-04 16:37:33.870626-03"
         )
 
         val response = client.get("/api/deposit") {
@@ -160,6 +161,7 @@ class DepositRoutesTest {
                 quantity = 500.0,
                 userId = userId,
                 wareId = wareId,
+                timestamp = "2024-05-04 16:37:33.870626-03"
             )
         )
 
@@ -212,6 +214,7 @@ class DepositRoutesTest {
                 quantity = 500.0,
                 userId = userId,
                 wareId = wareId,
+                timestamp = "2024-05-04 16:37:33.870626-03"
             )
         )
 

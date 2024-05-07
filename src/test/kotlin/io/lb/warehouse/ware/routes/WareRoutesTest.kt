@@ -157,7 +157,8 @@ class WareRoutesTest {
             weightUnit = "kg",
             availableQuantity = 500.0,
             quantityUnit = "pc",
-            wareLocation = "Gaveta 1 Prateleira 23"
+            wareLocation = "Gaveta 1 Prateleira 23",
+            timestamp = "2024-05-04 16:37:33.870626-03"
         )
         coEvery { service.updateWare(any(), any()) } returns 1
 
@@ -228,7 +229,8 @@ class WareRoutesTest {
             weightUnit = "kg",
             availableQuantity = 500.0,
             quantityUnit = "pc",
-            wareLocation = "Gaveta 1 Prateleira 23"
+            wareLocation = "Gaveta 1 Prateleira 23",
+            timestamp = "2024-05-04 16:37:33.870626-03"
         )
         coEvery { service.deleteWare(any()) } returns 1
 
@@ -285,7 +287,8 @@ class WareRoutesTest {
             weightUnit = "kg",
             availableQuantity = 500.0,
             quantityUnit = "pc",
-            wareLocation = "Gaveta 1 Prateleira 23"
+            wareLocation = "Gaveta 1 Prateleira 23",
+            timestamp = "2024-05-04 16:37:33.870626-03"
         )
 
         val response = client.get("/api/ware") {
@@ -341,7 +344,8 @@ class WareRoutesTest {
                 weightUnit = "kg",
                 availableQuantity = 500.0,
                 quantityUnit = "pc",
-                wareLocation = "Gaveta 1 Prateleira 23"
+                wareLocation = "Gaveta 1 Prateleira 23",
+                timestamp = "2024-05-04 16:37:33.870626-03"
             )
         )
 

@@ -2,6 +2,8 @@ package io.lb.warehouse.ware.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.google.gson.Gson
+import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -19,6 +21,7 @@ import io.lb.warehouse.ware.data.service.WareDatabaseService
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
@@ -331,22 +334,16 @@ class WareRoutesTest {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
 
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
         setup()
 
         coEvery { service.getWaresByUserId(userId) } returns listOf(
-            WareData(
-                uuid = uuid,
-                userId = userId,
-                name = "Novo Motor de partida Valtra BT",
-                brand = "Valtra",
-                description = "Novo",
-                weightPerUnit = 8.0,
-                weightUnit = "kg",
-                availableQuantity = 500.0,
-                quantityUnit = "pc",
-                wareLocation = "Gaveta 1 Prateleira 23",
-                timestamp = "2024-05-04 16:37:33.870626-03"
-            )
+            ware1,
+            ware2,
+            ware3,
         )
 
         val response = client.get("/api/waresCreatedByUser") {
@@ -354,8 +351,357 @@ class WareRoutesTest {
             parameter("userId", userId)
         }
 
+        assertThat(
+            Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        ).isEqualTo(
+            listOf(ware1, ware3, ware2)
+        )
         assertThat(response.status).isEqualTo(HttpStatusCode.OK)
     }
+
+    @Test
+    fun `Getting ware by userId with unexistent order, should return BadRequest`() = testApplication {
+        val uuid = "d5745277-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8911-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("order", "unexistent")
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(response.bodyAsText()).isEqualTo("Order should be: [asc, desc]")
+    }
+
+    @Test
+    fun `Getting ware by userId with unexistent sorting type, should return BadRequest`() = testApplication {
+        val uuid = "d5745277-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8911-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "unexistent")
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(response.bodyAsText()).isEqualTo("Sorting should be: [name, brand, quantity, timestamp]")
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by name descending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "name")
+            parameter("order", "desc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].name).isEqualTo("Novo Motor de partida Valtra BT")
+        assertThat(result[1].name).isEqualTo("Motor de partida T7")
+        assertThat(result[2].name).isEqualTo("Exemplo")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by name ascending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "name")
+            parameter("order", "asc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].name).isEqualTo("Exemplo")
+        assertThat(result[1].name).isEqualTo("Motor de partida T7")
+        assertThat(result[2].name).isEqualTo("Novo Motor de partida Valtra BT")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by brand descending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "brand")
+            parameter("order", "desc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].brand).isEqualTo("Valtra")
+        assertThat(result[1].brand).isEqualTo("New Holland")
+        assertThat(result[2].brand).isEqualTo("Adidas")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by brand ascending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "brand")
+            parameter("order", "asc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].brand).isEqualTo("Adidas")
+        assertThat(result[1].brand).isEqualTo("New Holland")
+        assertThat(result[2].brand).isEqualTo("Valtra")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by quantity descending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "quantity")
+            parameter("order", "desc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].availableQuantity).isEqualTo(590.0)
+        assertThat(result[1].availableQuantity).isEqualTo(500.0)
+        assertThat(result[2].availableQuantity).isEqualTo(50.0)
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by quantity ascending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "quantity")
+            parameter("order", "asc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].availableQuantity).isEqualTo(50.0)
+        assertThat(result[1].availableQuantity).isEqualTo(500.0)
+        assertThat(result[2].availableQuantity).isEqualTo(590.0)
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by timestamp descending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "timestamp")
+            parameter("order", "desc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].timestamp).isEqualTo("2024-06-04 16:37:33.870626-03")
+        assertThat(result[1].timestamp).isEqualTo("2024-05-05 16:37:33.870626-03")
+        assertThat(result[2].timestamp).isEqualTo("2024-05-04 16:37:33.870626-03")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    @Test
+    fun `Getting ware by userId sorting by timestamp ascending, should return OK`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+
+        val ware1 = wareData1(uuid, userId)
+        val ware2 = wareData2(uuid, userId)
+        val ware3 = wareData3(uuid, userId)
+
+        setup()
+
+        coEvery { service.getWaresByUserId(userId) } returns listOf(
+            ware1,
+            ware2,
+            ware3,
+        )
+
+        val response = client.get("/api/waresCreatedByUser") {
+            setupRequest()
+            parameter("userId", userId)
+            parameter("sortBy", "timestamp")
+            parameter("order", "asc")
+        }
+
+        val result = Json.decodeFromString<List<WareData>>(response.bodyAsText())
+        assertThat(result[0].timestamp).isEqualTo("2024-05-04 16:37:33.870626-03")
+        assertThat(result[1].timestamp).isEqualTo("2024-05-05 16:37:33.870626-03")
+        assertThat(result[2].timestamp).isEqualTo("2024-06-04 16:37:33.870626-03")
+        assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+    }
+
+    private fun wareData3(uuid: String, userId: String) = WareData(
+        uuid = uuid,
+        userId = userId,
+        name = "Exemplo",
+        brand = "Adidas",
+        description = "Novo",
+        weightPerUnit = 8.0,
+        weightUnit = "kg",
+        availableQuantity = 50.0,
+        quantityUnit = "pc",
+        wareLocation = "Gaveta 1 Prateleira 23",
+        timestamp = "2024-05-05 16:37:33.870626-03"
+    )
+
+    private fun wareData2(uuid: String, userId: String) = WareData(
+        uuid = uuid,
+        userId = userId,
+        name = "Novo Motor de partida Valtra BT",
+        brand = "Valtra",
+        description = "Novo",
+        weightPerUnit = 8.0,
+        weightUnit = "kg",
+        availableQuantity = 590.0,
+        quantityUnit = "pc",
+        wareLocation = "Gaveta 1 Prateleira 23",
+        timestamp = "2024-06-04 16:37:33.870626-03"
+    )
+
+    private fun wareData1(uuid: String, userId: String) = WareData(
+        uuid = uuid,
+        userId = userId,
+        name = "Motor de partida T7",
+        brand = "New Holland",
+        description = "Novo",
+        weightPerUnit = 8.0,
+        weightUnit = "kg",
+        availableQuantity = 500.0,
+        quantityUnit = "pc",
+        wareLocation = "Gaveta 1 Prateleira 23",
+        timestamp = "2024-05-04 16:37:33.870626-03"
+    )
 
     private fun ApplicationTestBuilder.setup() {
         setupApplication {

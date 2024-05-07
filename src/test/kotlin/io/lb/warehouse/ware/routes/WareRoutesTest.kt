@@ -2,8 +2,6 @@ package io.lb.warehouse.ware.routes
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.google.gson.Gson
-import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter

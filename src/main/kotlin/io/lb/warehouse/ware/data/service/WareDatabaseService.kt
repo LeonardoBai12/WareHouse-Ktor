@@ -87,6 +87,7 @@ class WareDatabaseService(private val connection: Connection) {
             val availableQuantity = resultSet.getDouble("available_quantity")
             val quantityUnit = resultSet.getString("quantity_unit")
             val wareLocation = resultSet.getString("ware_location")
+            val timestamp = resultSet.getString("timestamp")
 
             return@withContext WareData(
                 uuid = id,
@@ -99,6 +100,7 @@ class WareDatabaseService(private val connection: Connection) {
                 availableQuantity = availableQuantity,
                 quantityUnit = quantityUnit,
                 wareLocation = wareLocation,
+                timestamp = timestamp
             )
         } else {
             null
@@ -129,6 +131,7 @@ class WareDatabaseService(private val connection: Connection) {
             val availableQuantity = resultSet.getDouble("available_quantity")
             val quantityUnit = resultSet.getString("quantity_unit")
             val wareLocation = resultSet.getString("ware_location")
+            val timestamp = resultSet.getString("timestamp")
 
             wares.add(
                 WareData(
@@ -142,6 +145,7 @@ class WareDatabaseService(private val connection: Connection) {
                     availableQuantity = availableQuantity,
                     quantityUnit = quantityUnit,
                     wareLocation = wareLocation,
+                    timestamp = timestamp
                 )
             )
         }

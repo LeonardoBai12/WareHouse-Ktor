@@ -78,6 +78,7 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
         every { queryResult.getDouble("available_quantity") } returns 500.0
         every { queryResult.getString("quantity_unit") } returns "quantity_unit_value"
         every { queryResult.getString("ware_location") } returns "ware_location_value"
+        every { queryResult.getString("timestamp") } returns "2024-05-04 16:37:33.870626-03"
 
         val result = service.getWareById(wareId)
 
@@ -98,6 +99,7 @@ class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
         assertThat(result?.availableQuantity).isEqualTo(500.0)
         assertThat(result?.quantityUnit).isEqualTo("quantity_unit_value")
         assertThat(result?.wareLocation).isEqualTo("ware_location_value")
+        assertThat(result?.timestamp).isEqualTo("2024-05-04 16:37:33.870626-03")
     }
 
     @Test

@@ -72,6 +72,7 @@ class WithdrawDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
         every { queryResult.getString("user_id") } returns userId
         every { queryResult.getString("ware_id") } returns wareId
         every { queryResult.getDouble("quantity") } returns 500.0
+        every { queryResult.getString("timestamp") } returns "2024-05-04 16:37:33.870626-03"
 
         val result = service.getWithdrawById(withdrawId)
 
@@ -86,6 +87,7 @@ class WithdrawDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
         assertThat(result?.userId).isEqualTo(userId)
         assertThat(result?.wareId).isEqualTo(wareId)
         assertThat(result?.quantity).isEqualTo(500.0)
+        assertThat(result?.timestamp).isEqualTo("2024-05-04 16:37:33.870626-03")
     }
 
     @Test

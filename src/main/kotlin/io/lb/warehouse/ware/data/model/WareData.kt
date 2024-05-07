@@ -15,6 +15,7 @@ import kotlinx.serialization.Serializable
  * @property availableQuantity The available quantity of the ware (default: 0.0).
  * @property quantityUnit The unit of quantity for the ware (optional).
  * @property wareLocation The location of the ware.
+ * @property timestamp The timestamp on which the ware was created.
  */
 @Serializable
 data class WareData(
@@ -28,4 +29,5 @@ data class WareData(
     val availableQuantity: Double = 0.0,
     val quantityUnit: String?,
     val wareLocation: String,
+    val timestamp: String
 )

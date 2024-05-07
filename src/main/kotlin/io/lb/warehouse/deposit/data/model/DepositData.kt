@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
  * @property userId User identifier associated with the deposit.
  * @property wareId Identifier for the ware associated with the deposit.
  * @property quantity Quantity of the ware deposited.
+ * @property timestamp The timestamp on which the deposit was created.
  */
 @Serializable
 data class DepositData(
@@ -16,4 +17,5 @@ data class DepositData(
     val userId: String,
     val wareId: String,
     val quantity: Double,
+    val timestamp: String
 )

@@ -12,6 +12,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.ware.data.model.WareCreateRequest
+import io.lb.warehouse.ware.data.model.WareData
+import io.lb.warehouse.ware.data.model.WareSorting
 import io.lb.warehouse.ware.data.service.WareDatabaseService
 import java.sql.SQLException
 
@@ -73,10 +75,20 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                         call.respond(HttpStatusCode.BadRequest)
                         return@get
                     }
-                    val wares = wareService.getWaresByUserId(userId)
+                    val result = wareService.getWaresByUserId(userId)
 
-                    if (wares.isEmpty()) {
+                    if (result.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound, "There is no wares for such user")
+                        return@get
+                    }
+
+                    val sortBy = call.parameters["sortBy"] ?: WareSorting.BY_TIMESTAMP.label
+                    val order = call.parameters["order"] ?: WareSorting.SortOrder.ASCENDING.label
+
+                    val wares = try {
+                        result.getOrderedWares(sortBy, order)
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.BadRequest, e.message.toString())
                         return@get
                     }
 
@@ -126,5 +138,50 @@ fun Application.wareRoutes(wareService: WareDatabaseService) {
                 call.respond(HttpStatusCode.OK, "Ware deleted successfully")
             }
         }
+    }
+}
+
+private fun List<WareData>.getOrderedWares(
+    sortBy: String,
+    order: String,
+): List<WareData> {
+    return when (order) {
+        WareSorting.SortOrder.ASCENDING.label -> {
+            sortedBy {
+                it.getSortingTypeByLabel(sortBy)
+            }
+        }
+
+        WareSorting.SortOrder.DESCENDING.label -> {
+            sortedByDescending {
+                it.getSortingTypeByLabel(sortBy)
+            }
+        }
+
+        else -> {
+            throw Exception("Order should be: [asc, desc]")
+        }
+    }
+}
+
+private fun WareData.getSortingTypeByLabel(sortBy: String) = when (sortBy) {
+    WareSorting.BY_NAME.label -> {
+        name
+    }
+
+    WareSorting.BY_BRAND.label -> {
+        brand
+    }
+
+    WareSorting.BY_AVAILABLE_QUANTITY.label -> {
+        availableQuantity.toString()
+    }
+
+    WareSorting.BY_TIMESTAMP.label -> {
+        timestamp
+    }
+
+    else -> {
+        throw Exception("Sorting should be: [name, brand, quantity, timestamp]")
     }
 }

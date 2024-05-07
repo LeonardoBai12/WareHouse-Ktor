@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
  * @property userId The ID of the user who performed the withdrawal.
  * @property wareId The ID of the ware that was withdrawn.
  * @property quantity The quantity of ware that was withdrawn.
+ * @property timestamp The timestamp on which the withdrawal was created.
  */
 @Serializable
 data class WithdrawData(
@@ -16,4 +17,5 @@ data class WithdrawData(
     val userId: String,
     val wareId: String,
     val quantity: Double,
+    val timestamp: String
 )

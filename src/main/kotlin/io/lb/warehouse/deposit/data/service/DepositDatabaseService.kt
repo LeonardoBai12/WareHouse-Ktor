@@ -80,12 +80,14 @@ class DepositDatabaseService(private val connection: Connection) {
             val userId = resultSet.getString("user_id")
             val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
+            val timestamp = resultSet.getString("timestamp")
 
             return@withContext DepositData(
                 uuid = id,
                 userId = userId,
                 wareId = wareId,
                 quantity = quantity,
+                timestamp = timestamp
             )
         } else {
             null
@@ -110,6 +112,7 @@ class DepositDatabaseService(private val connection: Connection) {
             val id = resultSet.getString("uuid")
             val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
+            val timestamp = resultSet.getString("timestamp")
 
             deposits.add(
                 DepositData(
@@ -117,6 +120,7 @@ class DepositDatabaseService(private val connection: Connection) {
                     userId = userUUID,
                     wareId = wareId,
                     quantity = quantity,
+                    timestamp = timestamp
                 )
             )
         }
@@ -142,13 +146,15 @@ class DepositDatabaseService(private val connection: Connection) {
             val id = resultSet.getString("uuid")
             val userId = resultSet.getString("user_id")
             val quantity = resultSet.getDouble("quantity")
+            val timestamp = resultSet.getString("timestamp")
 
             deposits.add(
                 DepositData(
                     uuid = id,
                     userId = userId,
                     wareId = wareUUID,
-                    quantity = quantity
+                    quantity = quantity,
+                    timestamp = timestamp
                 )
             )
         }

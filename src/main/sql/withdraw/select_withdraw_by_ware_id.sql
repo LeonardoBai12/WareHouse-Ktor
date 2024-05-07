@@ -1,6 +1,7 @@
 SELECT
     uuid,
     user_id,
-    quantity
+    quantity,
+    timestamp
 FROM withdraw
 WHERE ware_id = ?;

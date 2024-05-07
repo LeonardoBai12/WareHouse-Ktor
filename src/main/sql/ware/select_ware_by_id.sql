@@ -7,6 +7,7 @@ SELECT
     weight_unit,
     available_quantity,
     quantity_unit,
-    ware_location
+    ware_location,
+    timestamp
 FROM ware
 WHERE uuid = ?;

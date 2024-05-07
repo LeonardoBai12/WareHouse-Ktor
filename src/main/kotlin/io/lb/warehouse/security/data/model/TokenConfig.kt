@@ -23,7 +23,7 @@ data class TokenConfig(
          * Default TokenConfig for the WareHouse project.
          *
          * @param config Represents an application config node.
-         * @param embedded Representis whether the server is embbeded.
+         * @param embedded Represents whether the server is embbeded.
          *
          * @return A TokenConfig instance with the default values for the WareHouse project.
          */

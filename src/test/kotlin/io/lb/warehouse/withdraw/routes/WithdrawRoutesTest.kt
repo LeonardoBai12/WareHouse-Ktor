@@ -104,7 +104,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws with such ID")
+        assertThat(response.bodyAsText()).isEqualTo("There is no withdraw with such ID")
     }
 
     @Test
@@ -155,7 +155,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such user")
     }
 
     @Test
@@ -208,7 +208,7 @@ class WithdrawRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no withdraws for such ware")
+        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such ware")
     }
 
     @Test

@@ -124,7 +124,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
+        assertThat(response.bodyAsText()).isEqualTo("There is no ware with such ID")
     }
 
     @Test
@@ -222,7 +222,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
+        assertThat(response.bodyAsText()).isEqualTo("There is no ware with such ID")
     }
 
     @Test
@@ -280,7 +280,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no wares with such ID")
+        assertThat(response.bodyAsText()).isEqualTo("There is no ware with such ID")
     }
 
     @Test
@@ -336,7 +336,7 @@ class WareRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no wares for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no wares for such user")
     }
 
     @Test

@@ -12,16 +12,16 @@ import io.ktor.server.application.install
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.deposit.data.model.DepositData
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
-import io.lb.warehouse.util.setupApplication
-import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.deposit.data.repository.DepositRepositoryImpl
+import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
 import io.lb.warehouse.deposit.domain.repository.DepositRepository
 import io.lb.warehouse.deposit.domain.use_cases.CreateDepositUseCase
+import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
 import io.lb.warehouse.deposit.domain.use_cases.GetDepositByIDUseCase
 import io.lb.warehouse.deposit.domain.use_cases.GetDepositsByUserIdUseCase
 import io.lb.warehouse.deposit.domain.use_cases.GetDepositsByWareIdUseCase
-import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
+import io.lb.warehouse.util.setupApplication
+import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -104,7 +104,7 @@ class DepositRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no deposits with such ID")
+        assertThat(response.bodyAsText()).isEqualTo("There is no deposit with such ID")
     }
 
     @Test
@@ -155,7 +155,7 @@ class DepositRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no deposits for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such user")
     }
 
     @Test
@@ -208,7 +208,7 @@ class DepositRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no deposits for such ware")
+        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such ware")
     }
 
     @Test

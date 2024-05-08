@@ -5,6 +5,9 @@ import io.lb.warehouse.withdraw.data.model.WithdrawData
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
 import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
 
+/**
+ * Repository class for interacting with withdrawal data.
+ */
 class WithdrawRepositoryImpl(
     private val service: WithdrawDatabaseService
 ) : WithdrawRepository {

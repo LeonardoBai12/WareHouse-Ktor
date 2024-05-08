@@ -25,8 +25,8 @@ import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserUpdateRequest
 import io.lb.warehouse.user.domain.use_cases.UserUseCases
-import java.sql.SQLException
 import org.koin.ktor.ext.inject
+import java.sql.SQLException
 
 /**
  * Extension function with routes related to user operations.

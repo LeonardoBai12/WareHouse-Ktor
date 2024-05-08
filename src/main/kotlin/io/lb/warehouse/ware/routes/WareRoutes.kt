@@ -15,8 +15,8 @@ import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareSorting
 import io.lb.warehouse.ware.domain.use_cases.WareUseCases
-import java.sql.SQLException
 import org.koin.ktor.ext.inject
+import java.sql.SQLException
 
 /**
  * Extension function with routes related to ware operations.

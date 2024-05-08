@@ -27,7 +27,7 @@ suspend fun UserRepository.validatePassword(
         throw WareHouseException(HttpStatusCode.Unauthorized, "Invalid password")
     }
 
-    if (password.passwordCheck(storedUser.password!!)) {
+    if (!password.passwordCheck(storedUser.password ?: "")) {
         throw WareHouseException(HttpStatusCode.Unauthorized, "Invalid password")
     }
 

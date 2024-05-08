@@ -7,12 +7,13 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import io.lb.warehouse.core.util.loadQueryFromFile
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.CREATE_TABLE_DEPOSIT
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.INSERT_DEPOSIT
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_USER_ID
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_WARE_ID
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSIT_BY_ID
 import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl.Companion.CREATE_TABLE_DEPOSIT
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl.Companion.INSERT_DEPOSIT
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl.Companion.SELECT_DEPOSITS_BY_USER_ID
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl.Companion.SELECT_DEPOSITS_BY_WARE_ID
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl.Companion.SELECT_DEPOSIT_BY_ID
 import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
 import io.mockk.verify
@@ -23,7 +24,7 @@ import java.sql.Statement
 import java.util.UUID
 
 class DepositDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_DEPOSIT) {
-    private lateinit var service: DepositDatabaseServiceImpl
+    private lateinit var service: DepositDatabaseService
 
     @BeforeEach
     override fun setUp() {

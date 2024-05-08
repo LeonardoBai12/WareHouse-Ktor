@@ -8,17 +8,28 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.install
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
+import io.lb.warehouse.withdraw.data.repository.WithdrawRepositoryImpl
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
+import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
+import io.lb.warehouse.withdraw.domain.use_cases.CreateWithdrawUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawByIDUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByUserIdUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByWareIdUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 class WithdrawRoutesTest {
     private val service: WithdrawDatabaseServiceImpl = mockk()
@@ -228,7 +239,24 @@ class WithdrawRoutesTest {
 
     private fun ApplicationTestBuilder.setup() {
         setupApplication {
-            withdrawRoutes(service)
+            install(Koin) {
+                slf4jLogger()
+                modules(withdrawModule)
+            }
+            withdrawRoutes()
+        }
+    }
+    private val withdrawModule = module {
+        single<WithdrawRepository> {
+            WithdrawRepositoryImpl(service)
+        }
+        single {
+            WithdrawUseCases(
+                createWithdrawUseCase = CreateWithdrawUseCase(get()),
+                getWithdrawByIDUseCase = GetWithdrawByIDUseCase(get()),
+                getWithdrawsByUserIdUseCase = GetWithdrawsByUserIdUseCase(get()),
+                getWithdrawsByWareIdUseCase = GetWithdrawsByWareIdUseCase(get()),
+            )
         }
     }
 }

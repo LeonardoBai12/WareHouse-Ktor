@@ -73,8 +73,8 @@ fun Application.depositRoutes() {
                     return@get
                 }
                 try {
-                    val deposit = useCases.getDepositByIDUseCase(userId)
-                    call.respond(HttpStatusCode.OK, deposit)
+                    val deposits = useCases.getDepositsByUserIdUseCase(userId)
+                    call.respond(HttpStatusCode.OK, deposits)
                 } catch (e: SQLException) {
                     call.respond(HttpStatusCode.Forbidden, e.message.toString())
                 } catch (e: WareHouseException) {

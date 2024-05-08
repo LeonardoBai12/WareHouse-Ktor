@@ -8,11 +8,11 @@ import assertk.assertions.isNull
 import io.lb.warehouse.core.util.loadQueryFromFile
 import io.lb.warehouse.util.BaseServiceTest
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl.Companion.CREATE_TABLE_WITHDRAW
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl.Companion.INSERT_WITHDRAW
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl.Companion.SELECT_WITHDRAWS_BY_USER_ID
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl.Companion.SELECT_WITHDRAWS_BY_WARE_ID
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl.Companion.SELECT_WITHDRAW_BY_ID
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.CREATE_TABLE_WITHDRAW
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.INSERT_WITHDRAW
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_USER_ID
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_WARE_ID
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAW_BY_ID
 import io.mockk.every
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -22,7 +22,7 @@ import java.sql.Statement.RETURN_GENERATED_KEYS
 import java.util.UUID
 
 class WithdrawDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
-    private lateinit var service: WithdrawDatabaseServiceImpl
+    private lateinit var service: WithdrawDatabaseService
 
     @BeforeEach
     override fun setUp() {

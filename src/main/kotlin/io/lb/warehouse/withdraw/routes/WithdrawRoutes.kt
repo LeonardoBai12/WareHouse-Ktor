@@ -73,7 +73,7 @@ fun Application.withdrawRoutes() {
                     return@get
                 }
                 try {
-                    val withdraw = useCases.getWithdrawByIDUseCase(userId)
+                    val withdraw = useCases.getWithdrawsByUserIdUseCase(userId)
                     call.respond(HttpStatusCode.OK, withdraw)
                 } catch (e: SQLException) {
                     call.respond(HttpStatusCode.Forbidden, e.message.toString())

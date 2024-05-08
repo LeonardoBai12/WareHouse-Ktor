@@ -10,12 +10,22 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.install
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.security.data.model.TokenConfig
 import io.lb.warehouse.user.data.model.UserData
+import io.lb.warehouse.user.data.repository.UserRepositoryImpl
 import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl
+import io.lb.warehouse.user.domain.repository.UserRepository
+import io.lb.warehouse.user.domain.use_cases.DeleteUserUseCase
+import io.lb.warehouse.user.domain.use_cases.GetUserByIdUseCase
+import io.lb.warehouse.user.domain.use_cases.LoginUseCase
+import io.lb.warehouse.user.domain.use_cases.SignUpUseCase
+import io.lb.warehouse.user.domain.use_cases.UpdatePasswordUseCase
+import io.lb.warehouse.user.domain.use_cases.UpdateUserUseCase
+import io.lb.warehouse.user.domain.use_cases.UserUseCases
 import io.lb.warehouse.util.configureSession
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
@@ -24,6 +34,9 @@ import io.mockk.mockk
 import io.mockk.unmockkAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 class UserRoutesTest {
     private val service: UserDatabaseServiceImpl = mockk()
@@ -215,7 +228,7 @@ class UserRoutesTest {
 
         setup()
 
-        coEvery { service.isEmailAlreadyInUse(any()) } returns true
+        coEvery { service.isEmailAlreadyInUse(any()) } returns false
         coEvery { service.getUserById(uuid) } returns UserData(
             userId = uuid,
             userName = "oldTestUser",
@@ -988,14 +1001,33 @@ class UserRoutesTest {
                 bypass,
                 userId
             )
-            userRoutes(
-                TokenConfig(
-                    issuer = "http://0.0.0.0:8080",
-                    audience = "users",
-                    expiresIn = 365L * 1000L * 60L * 60L * 24L,
-                    secret = "secret"
-                ),
-                service
+            install(Koin) {
+                slf4jLogger()
+                modules(userModule)
+            }
+            userRoutes()
+        }
+    }
+    private val userModule = module {
+        single<TokenConfig> {
+            TokenConfig(
+                issuer = "http://0.0.0.0:8080",
+                audience = "users",
+                expiresIn = 365L * 1000L * 60L * 60L * 24L,
+                secret = "secret"
+            )
+        }
+        single<UserRepository> {
+            UserRepositoryImpl(service)
+        }
+        single {
+            UserUseCases(
+                deleteUserUseCase = DeleteUserUseCase(get()),
+                getUserByIdUseCase = GetUserByIdUseCase(get()),
+                loginUseCase = LoginUseCase(get(), get()),
+                signUpUseCase = SignUpUseCase(get()),
+                updatePasswordUseCase = UpdatePasswordUseCase(get()),
+                updateUserUseCase = UpdateUserUseCase(get()),
             )
         }
     }

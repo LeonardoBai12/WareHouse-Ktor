@@ -10,21 +10,34 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.install
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.ware.data.model.WareData
+import io.lb.warehouse.ware.data.repository.WareRepositoryImpl
+import io.lb.warehouse.ware.data.service.WareDatabaseService
 import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
+import io.lb.warehouse.ware.domain.repository.WareRepository
+import io.lb.warehouse.ware.domain.use_cases.CreateWareUseCase
+import io.lb.warehouse.ware.domain.use_cases.DeleteWareUseCase
+import io.lb.warehouse.ware.domain.use_cases.GetWareByIdUseCase
+import io.lb.warehouse.ware.domain.use_cases.GetWaresByUserIdUseCase
+import io.lb.warehouse.ware.domain.use_cases.UpdateWareUseCase
+import io.lb.warehouse.ware.domain.use_cases.WareUseCases
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.koin.dsl.module
+import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 class WareRoutesTest {
-    private val service: WareDatabaseServiceImpl = mockk()
+    private val service: WareDatabaseService = mockk()
 
     @AfterEach
     fun tearDown() {
@@ -703,7 +716,26 @@ class WareRoutesTest {
 
     private fun ApplicationTestBuilder.setup() {
         setupApplication {
-            wareRoutes(service)
+            install(Koin) {
+                slf4jLogger()
+                modules(wareModule)
+            }
+            wareRoutes()
+        }
+    }
+
+    private val wareModule = module {
+        single<WareRepository> {
+            WareRepositoryImpl(service)
+        }
+        single {
+            WareUseCases(
+                createWareUseCase = CreateWareUseCase(get()),
+                deleteWareUseCase = DeleteWareUseCase(get()),
+                getWareByIdUseCase = GetWareByIdUseCase(get()),
+                getWaresByUserIdUseCase = GetWaresByUserIdUseCase(get()),
+                updateWareUseCase = UpdateWareUseCase(get()),
+            )
         }
     }
 }

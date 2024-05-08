@@ -29,12 +29,6 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_DEPOSIT_TRIGGER))
     }
 
-    /**
-     * Inserts a deposit into the database.
-     *
-     * @param deposit The deposit data to insert.
-     * @return The UUID of the inserted deposit.
-     */
     override suspend fun insertDeposit(deposit: DepositCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_DEPOSIT),
@@ -54,12 +48,6 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
         uuid.toString()
     }
 
-    /**
-     * Retrieves a deposit by its ID from the database.
-     *
-     * @param id The ID of the deposit to retrieve.
-     * @return The deposit data, or null if not found.
-     */
     override suspend fun getDepositById(id: String): DepositData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_DEPOSIT_BY_ID)
@@ -85,12 +73,6 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
         }
     }
 
-    /**
-     * Retrieves deposits by user ID from the database.
-     *
-     * @param userUUID The UUID of the user.
-     * @return List of deposits associated with the user.
-     */
     override suspend fun getDepositsByUserId(userUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
         val deposits = mutableListOf<DepositData>()
         val statement = connection.prepareStatement(
@@ -119,12 +101,6 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
         return@withContext deposits
     }
 
-    /**
-     * Retrieves deposits by ware ID from the database.
-     *
-     * @param wareUUID The UUID of the ware.
-     * @return List of deposits associated with the ware.
-     */
     override suspend fun getDepositsByWareId(wareUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
         val deposits = mutableListOf<DepositData>()
         val statement = connection.prepareStatement(

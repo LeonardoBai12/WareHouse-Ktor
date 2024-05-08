@@ -4,6 +4,9 @@ import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.model.DepositData
 import org.jetbrains.annotations.VisibleForTesting
 
+/**
+ * Service interface for interacting with the deposit table in the PostgreSQL database.
+ */
 interface DepositDatabaseService {
     /**
      * @suppress
@@ -20,8 +23,35 @@ interface DepositDatabaseService {
         const val SELECT_DEPOSITS_BY_WARE_ID = "deposit/select_deposit_by_ware_id.sql"
     }
 
+    /**
+     * Inserts a deposit into the database.
+     *
+     * @param deposit The deposit data to insert.
+     * @return The UUID of the inserted deposit.
+     */
     suspend fun insertDeposit(deposit: DepositCreateRequest): String
+
+    /**
+     * Retrieves a deposit by its ID from the database.
+     *
+     * @param id The ID of the deposit to retrieve.
+     * @return The deposit data, or null if not found.
+     */
     suspend fun getDepositById(id: String): DepositData?
+
+    /**
+     * Retrieves deposits by user ID from the database.
+     *
+     * @param userUUID The UUID of the user.
+     * @return List of deposits associated with the user.
+     */
     suspend fun getDepositsByUserId(userUUID: String): List<DepositData>
+
+    /**
+     * Retrieves deposits by ware ID from the database.
+     *
+     * @param wareUUID The UUID of the ware.
+     * @return List of deposits associated with the ware.
+     */
     suspend fun getDepositsByWareId(wareUUID: String): List<DepositData>
 }

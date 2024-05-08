@@ -29,12 +29,6 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
         statement.executeUpdate(loadQueryFromFile(CREATE_AFTER_WITHDRAW_TRIGGER))
     }
 
-    /**
-     * Inserts a withdrawal into the database.
-     *
-     * @param withdraw The withdrawal data to insert.
-     * @return The UUID of the inserted withdrawal.
-     */
     override suspend fun insertWithdraw(withdraw: WithdrawCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WITHDRAW),
@@ -54,12 +48,6 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
         uuid.toString()
     }
 
-    /**
-     * Retrieves a withdrawals by its ID from the database.
-     *
-     * @param id The ID of the withdrawals to retrieve.
-     * @return The withdrawals data, or null if not found.
-     */
     override suspend fun getWithdrawById(id: String): WithdrawData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_WITHDRAW_BY_ID)
@@ -85,12 +73,6 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
         }
     }
 
-    /**
-     * Retrieves withdrawals by user ID from the database.
-     *
-     * @param userUUID The UUID of the user.
-     * @return List of withdrawals associated with the user.
-     */
     override suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
         val withdraws = mutableListOf<WithdrawData>()
         val statement = connection.prepareStatement(
@@ -119,12 +101,6 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
         return@withContext withdraws
     }
 
-    /**
-     * Retrieves withdrawals by ware ID from the database.
-     *
-     * @param wareUUID The UUID of the ware.
-     * @return List of withdrawals associated with the ware.
-     */
     override suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
         val withdraws = mutableListOf<WithdrawData>()
         val statement = connection.prepareStatement(

@@ -26,12 +26,6 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_WARE))
     }
 
-    /**
-     * Inserts a new ware into the database.
-     *
-     * @param ware The ware data to insert.
-     * @return The UUID of the inserted ware.
-     */
     override suspend fun insertWare(ware: WareCreateRequest): String = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(INSERT_WARE),
@@ -56,12 +50,6 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         uuid.toString()
     }
 
-    /**
-     * Retrieves a ware by its ID from the database.
-     *
-     * @param id The ID of the ware to retrieve.
-     * @return The ware data, or null if not found.
-     */
     override suspend fun getWareById(id: String): WareData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(
             loadQueryFromFile(SELECT_WARE_BY_ID)
@@ -99,12 +87,6 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         }
     }
 
-    /**
-     * Retrieves wares by user ID from the database.
-     *
-     * @param userUUID The UUID of the user.
-     * @return List of wares associated with the user.
-     */
     override suspend fun getWaresByUserId(userUUID: String): List<WareData> = withContext(Dispatchers.IO) {
         val wares = mutableListOf<WareData>()
         val statement = connection.prepareStatement(
@@ -145,12 +127,6 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         return@withContext wares
     }
 
-    /**
-     * Updates a ware in the database.
-     *
-     * @param uuid The UUID of the ware to update.
-     * @param ware The updated ware data.
-     */
     override suspend fun updateWare(uuid: String, ware: WareCreateRequest) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_WARE))) {
             setString(1, ware.name)
@@ -165,11 +141,6 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         }
     }
 
-    /**
-     * Deletes a ware from the database.
-     *
-     * @param id The ID of the ware to delete.
-     */
     override suspend fun deleteWare(id: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(DELETE_WARE))) {
             setObject(1, UUID.fromString(id))

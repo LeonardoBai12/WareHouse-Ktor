@@ -10,7 +10,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
 import java.sql.SQLException
 
 /**
@@ -32,7 +32,7 @@ import java.sql.SQLException
  *
  * @param depositService Service class for interacting with the deposit table in the PostgreSQL database.
  */
-fun Application.depositRoutes(depositService: DepositDatabaseService) {
+fun Application.depositRoutes(depositService: DepositDatabaseServiceImpl) {
     routing {
         authenticate {
             post("/api/createDeposit") {

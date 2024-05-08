@@ -14,7 +14,7 @@ import io.ktor.server.routing.routing
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.model.WareSorting
-import io.lb.warehouse.ware.data.service.WareDatabaseService
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
 import java.sql.SQLException
 
 /**
@@ -39,7 +39,7 @@ import java.sql.SQLException
  *
  * @param wareService Service class for interacting with the ware table in the PostgreSQL database.
  */
-fun Application.wareRoutes(wareService: WareDatabaseService) {
+fun Application.wareRoutes(wareService: WareDatabaseServiceImpl) {
     routing {
         authenticate {
             post("/api/createWare") {

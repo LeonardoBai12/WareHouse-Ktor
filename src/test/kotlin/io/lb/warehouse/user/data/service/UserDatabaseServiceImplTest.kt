@@ -8,13 +8,13 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.lb.warehouse.core.util.loadQueryFromFile
 import io.lb.warehouse.user.data.model.UserData
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.CREATE_TABLE_USER_DATA
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.DELETE_USER
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.INSERT_USER
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.SELECT_USER_BY_EMAIL
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.SELECT_USER_BY_ID
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.UPDATE_PASSWORD
-import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.UPDATE_USER
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.CREATE_TABLE_USER_DATA
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.DELETE_USER
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.INSERT_USER
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.SELECT_USER_BY_EMAIL
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.SELECT_USER_BY_ID
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.UPDATE_PASSWORD
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl.Companion.UPDATE_USER
 import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
 import io.mockk.verify
@@ -23,13 +23,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class UserDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
-    private lateinit var service: UserDatabaseService
+class UserDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
+    private lateinit var service: UserDatabaseServiceImpl
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        service = UserDatabaseService(connection)
+        service = UserDatabaseServiceImpl(connection)
     }
 
     @Test

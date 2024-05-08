@@ -15,7 +15,7 @@ import io.ktor.server.testing.testApplication
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.ware.data.model.WareData
-import io.lb.warehouse.ware.data.service.WareDatabaseService
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 class WareRoutesTest {
-    private val service: WareDatabaseService = mockk()
+    private val service: WareDatabaseServiceImpl = mockk()
 
     @AfterEach
     fun tearDown() {

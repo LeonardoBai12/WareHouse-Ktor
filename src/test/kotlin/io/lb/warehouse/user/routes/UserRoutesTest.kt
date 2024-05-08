@@ -15,7 +15,7 @@ import io.ktor.server.testing.testApplication
 import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.security.data.model.TokenConfig
 import io.lb.warehouse.user.data.model.UserData
-import io.lb.warehouse.user.data.service.UserDatabaseService
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl
 import io.lb.warehouse.util.configureSession
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 class UserRoutesTest {
-    private val service: UserDatabaseService = mockk()
+    private val service: UserDatabaseServiceImpl = mockk()
 
     @AfterEach
     fun tearDown() {

@@ -13,7 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 class WithdrawRoutesTest {
-    private val service: WithdrawDatabaseService = mockk()
+    private val service: WithdrawDatabaseServiceImpl = mockk()
 
     @AfterEach
     fun tearDown() {

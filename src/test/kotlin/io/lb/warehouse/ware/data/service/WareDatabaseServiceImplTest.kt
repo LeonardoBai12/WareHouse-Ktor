@@ -8,12 +8,12 @@ import assertk.assertions.isNull
 import io.lb.warehouse.core.util.loadQueryFromFile
 import io.lb.warehouse.util.BaseServiceTest
 import io.lb.warehouse.ware.data.model.WareCreateRequest
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.CREATE_TABLE_WARE
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.DELETE_WARE
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.INSERT_WARE
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARES_BY_USER_ID
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARE_BY_ID
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.UPDATE_WARE
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.CREATE_TABLE_WARE
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.DELETE_WARE
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.INSERT_WARE
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.SELECT_WARES_BY_USER_ID
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.SELECT_WARE_BY_ID
+import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl.Companion.UPDATE_WARE
 import io.mockk.every
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -22,13 +22,13 @@ import org.junit.jupiter.api.Test
 import java.sql.Statement
 import java.util.UUID
 
-class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
-    private lateinit var service: WareDatabaseService
+class WareDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WARE) {
+    private lateinit var service: WareDatabaseServiceImpl
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        service = WareDatabaseService(connection)
+        service = WareDatabaseServiceImpl(connection)
     }
 
     @Test

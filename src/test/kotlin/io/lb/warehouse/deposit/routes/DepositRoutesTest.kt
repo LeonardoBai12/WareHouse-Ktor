@@ -11,7 +11,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import io.lb.warehouse.deposit.data.model.DepositData
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 class DepositRoutesTest {
-    private val service: DepositDatabaseService = mockk()
+    private val service: DepositDatabaseServiceImpl = mockk()
 
     @AfterEach
     fun tearDown() {

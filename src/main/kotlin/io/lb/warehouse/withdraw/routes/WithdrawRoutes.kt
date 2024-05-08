@@ -10,7 +10,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import java.sql.SQLException
 
 /**
@@ -32,7 +32,7 @@ import java.sql.SQLException
  *
  * @param withdrawService Service class for interacting with the withdrawal table in the PostgreSQL database.
  */
-fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseService) {
+fun Application.withdrawRoutes(withdrawService: WithdrawDatabaseServiceImpl) {
     routing {
         authenticate {
             post("/api/createWithdraw") {

@@ -29,7 +29,7 @@ import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.model.UserUpdateRequest
-import io.lb.warehouse.user.data.service.UserDatabaseService
+import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl
 
 /**
  * Extension function with routes related to user operations.
@@ -62,7 +62,7 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  */
 fun Application.userRoutes(
     tokenConfig: TokenConfig,
-    userService: UserDatabaseService
+    userService: UserDatabaseServiceImpl
 ) {
     routing {
         post("/api/signUp") {
@@ -252,7 +252,7 @@ fun Application.userRoutes(
 }
 
 private suspend fun PipelineContext<*, ApplicationCall>.validatePassword(
-    userService: UserDatabaseService,
+    userService: UserDatabaseServiceImpl,
     userId: String,
     password: String,
     block: suspend (UserData) -> Unit
@@ -287,7 +287,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.validateSession(userId: 
 }
 
 private suspend fun PipelineContext<*, ApplicationCall>.validateEmail(
-    userService: UserDatabaseService,
+    userService: UserDatabaseServiceImpl,
     email: String?
 ): Boolean {
     if (email != null && userService.isEmailAlreadyInUse(email)) {

@@ -18,7 +18,7 @@ suspend fun UserRepository.validateEmail(email: String?) {
 suspend fun UserRepository.validatePassword(
     userId: String,
     password: String,
-) : UserData {
+): UserData {
     val storedUser = getUserById(userId) ?: run {
         throw WareHouseException(HttpStatusCode.NotFound, "There is no user with such ID")
     }

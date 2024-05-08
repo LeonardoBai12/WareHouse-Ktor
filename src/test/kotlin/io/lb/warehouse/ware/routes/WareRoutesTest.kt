@@ -18,7 +18,6 @@ import io.lb.warehouse.util.setupRequest
 import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.repository.WareRepositoryImpl
 import io.lb.warehouse.ware.data.service.WareDatabaseService
-import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
 import io.lb.warehouse.ware.domain.repository.WareRepository
 import io.lb.warehouse.ware.domain.use_cases.CreateWareUseCase
 import io.lb.warehouse.ware.domain.use_cases.DeleteWareUseCase

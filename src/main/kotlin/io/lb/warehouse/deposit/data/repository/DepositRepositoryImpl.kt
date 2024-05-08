@@ -23,5 +23,4 @@ class DepositRepositoryImpl(
     override suspend fun getDepositsByWareId(wareUUID: String): List<DepositData> {
         return service.getDepositsByWareId(wareUUID)
     }
-
 }

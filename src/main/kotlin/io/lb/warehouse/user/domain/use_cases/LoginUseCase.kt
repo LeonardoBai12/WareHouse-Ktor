@@ -6,8 +6,6 @@ import io.lb.warehouse.security.generateToken
 import io.lb.warehouse.user.domain.repository.UserRepository
 import io.lb.warehouse.user.util.validatePassword
 
-//* @param tokenConfig Data class representing token configurations.
-
 class LoginUseCase(
     private val repository: UserRepository,
     private val tokenConfig: TokenConfig

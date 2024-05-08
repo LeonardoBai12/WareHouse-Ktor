@@ -104,7 +104,6 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-
     implementation("io.insert-koin:koin-ktor:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("io.ktor:ktor-server-sessions:$ktorVersion")

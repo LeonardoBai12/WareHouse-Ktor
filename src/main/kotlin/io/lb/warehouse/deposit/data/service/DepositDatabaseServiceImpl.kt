@@ -12,7 +12,6 @@ import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SEL
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSIT_BY_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.sql.Statement
 import java.util.UUID

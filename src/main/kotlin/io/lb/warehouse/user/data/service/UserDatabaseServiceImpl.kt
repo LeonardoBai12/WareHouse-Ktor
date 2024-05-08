@@ -11,7 +11,6 @@ import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.UPDATE_PA
 import io.lb.warehouse.user.data.service.UserDatabaseService.Companion.UPDATE_USER
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.annotations.VisibleForTesting
 import java.sql.Connection
 import java.util.UUID
 

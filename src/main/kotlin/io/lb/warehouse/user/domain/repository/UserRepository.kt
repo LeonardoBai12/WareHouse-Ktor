@@ -55,4 +55,3 @@ interface UserRepository {
      */
     suspend fun isEmailAlreadyInUse(email: String): Boolean
 }
-

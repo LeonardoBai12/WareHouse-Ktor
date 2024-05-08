@@ -7,8 +7,11 @@ import io.ktor.server.auth.authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.lb.warehouse.security.data.model.TokenConfig
+import org.koin.ktor.ext.inject
 
-fun Application.configureAuth(config: TokenConfig) {
+fun Application.configureAuth() {
+    val config by inject<TokenConfig>()
+
     authentication {
         jwt {
             realm = "WareHouse-Ktor"

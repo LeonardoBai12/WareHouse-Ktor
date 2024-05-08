@@ -6,7 +6,7 @@ import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
 class CreateWithdrawUseCase(
     private val repository: WithdrawRepository
 ) {
-    suspend operator fun invoke(id: WithdrawCreateRequest): String {
-        return repository.insertWithdraw(id)
+    suspend operator fun invoke(request: WithdrawCreateRequest): String {
+        return repository.insertWithdraw(request)
     }
 }

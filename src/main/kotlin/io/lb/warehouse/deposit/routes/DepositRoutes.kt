@@ -13,6 +13,7 @@ import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
 import java.sql.SQLException
+import org.koin.ktor.ext.inject
 
 /**
  * Extension function with routes related to deposit operations.
@@ -30,10 +31,10 @@ import java.sql.SQLException
  *
  * Get deposits by ware UUID:
  * [/api/depositsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#03bbb3f7-1a9d-452d-965c-388e73a4eb59)
- *
- * @param useCases Use cases class for managing depositals business rules.
  */
-fun Application.depositRoutes(useCases: DepositUseCases) {
+fun Application.depositRoutes() {
+    val useCases by inject<DepositUseCases>()
+
     routing {
         authenticate {
             post("/api/createDeposit") {

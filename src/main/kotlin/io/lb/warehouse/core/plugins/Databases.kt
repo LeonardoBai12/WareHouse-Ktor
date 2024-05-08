@@ -3,32 +3,18 @@ package io.lb.warehouse.core.plugins
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.Application
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
 import io.lb.warehouse.deposit.routes.depositRoutes
-import io.lb.warehouse.security.data.model.TokenConfig
-import io.lb.warehouse.user.data.service.UserDatabaseServiceImpl
 import io.lb.warehouse.user.routes.userRoutes
-import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
 import io.lb.warehouse.ware.routes.wareRoutes
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import io.lb.warehouse.withdraw.routes.withdrawRoutes
 import java.io.FileInputStream
 import java.util.Properties
 
-fun Application.configureDatabases(config: TokenConfig) {
-    val dbConnection = connectToPostgres(embedded = true).connection
-
-    val userDatabaseService = UserDatabaseServiceImpl(dbConnection)
-    userRoutes(config, userDatabaseService)
-
-    val wareDatabaseService = WareDatabaseServiceImpl(dbConnection)
-    wareRoutes(wareDatabaseService)
-
-    val withdrawDatabaseService = WithdrawDatabaseServiceImpl(dbConnection)
-    withdrawRoutes(withdrawDatabaseService)
-
-    val depositDatabaseService = DepositDatabaseServiceImpl(dbConnection)
-    depositRoutes(depositDatabaseService)
+fun Application.configureDatabases() {
+    userRoutes()
+    wareRoutes()
+    withdrawRoutes()
+    depositRoutes()
 }
 
 fun Application.connectToPostgres(embedded: Boolean): HikariDataSource {

@@ -13,13 +13,10 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.ware.data.model.WareCreateRequest
-import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.model.WareSorting
-import io.lb.warehouse.ware.data.service.WareDatabaseServiceImpl
 import io.lb.warehouse.ware.domain.use_cases.WareUseCases
-import io.lb.warehouse.ware.util.getOrderedWares
-import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
 import java.sql.SQLException
+import org.koin.ktor.ext.inject
 
 /**
  * Extension function with routes related to ware operations.
@@ -40,10 +37,10 @@ import java.sql.SQLException
  *
  * Delete ware:
  * [/api/deleteWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0e7b55ba-0ade-4e5b-bcb5-7ae7ea665204)
- *
- * @param useCases Use cases class for managing wares business rules.
  */
-fun Application.wareRoutes(useCases: WareUseCases) {
+fun Application.wareRoutes() {
+    val useCases by inject<WareUseCases>()
+
     routing {
         authenticate {
             post("/api/createWare") {

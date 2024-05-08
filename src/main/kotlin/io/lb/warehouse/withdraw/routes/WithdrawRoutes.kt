@@ -11,9 +11,9 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
 import java.sql.SQLException
+import org.koin.ktor.ext.inject
 
 /**
  * Extension function with routes related to withdraw operations.
@@ -31,10 +31,10 @@ import java.sql.SQLException
  *
  * Get withdraws by ware UUID:
  * [/api/withdrawsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#c9a18637-a85d-42d3-88c7-4e620065b552)
- *
- * @param useCases Use cases class for managing withdrawals business rules.
  */
-fun Application.withdrawRoutes(useCases: WithdrawUseCases) {
+fun Application.withdrawRoutes() {
+    val useCases by inject<WithdrawUseCases>()
+
     routing {
         authenticate {
             post("/api/createWithdraw") {

@@ -8,9 +8,21 @@ import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.domain.repository.UserRepository
 import io.lb.warehouse.user.util.validateEmail
 
+/**
+ * Use case for user sign up.
+ *
+ * @property repository The repository for interacting with user data.
+ */
 class SignUpUseCase(
     private val repository: UserRepository
 ) {
+    /**
+     * Registers a new user.
+     *
+     * @param user The user creation request containing user details.
+     * @return The ID of the newly created user.
+     * @throws WareHouseException if there are validation errors or if user creation fails.
+     */
     suspend operator fun invoke(user: UserCreateRequest): String {
         repository.validateEmail(user.email)
 

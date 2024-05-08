@@ -22,7 +22,7 @@ tasks.dokkaHtml {
         skipEmptyPackages.set(true)
 
         perPackageOption {
-            matchingRegex.set(".*.(core).*")
+            matchingRegex.set(".*.(core|di).*")
             suppress.set(true)
         }
     }

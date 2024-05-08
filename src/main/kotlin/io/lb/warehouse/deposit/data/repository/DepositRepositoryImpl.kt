@@ -5,6 +5,9 @@ import io.lb.warehouse.deposit.data.model.DepositData
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import io.lb.warehouse.deposit.domain.repository.DepositRepository
 
+/**
+ * Repository class for interacting with deposit data.
+ */
 class DepositRepositoryImpl(
     private val service: DepositDatabaseService
 ) : DepositRepository {

@@ -4,6 +4,9 @@ import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.service.UserDatabaseService
 import io.lb.warehouse.user.domain.repository.UserRepository
 
+/**
+ * Repository class for interacting with user data.
+ */
 class UserRepositoryImpl(
     private val service: UserDatabaseService
 ) : UserRepository {

@@ -5,6 +5,9 @@ import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.service.WareDatabaseService
 import io.lb.warehouse.ware.domain.repository.WareRepository
 
+/**
+ * Repository class for interacting with ware data.
+ */
 class WareRepositoryImpl(
     private val service: WareDatabaseService
 ) : WareRepository {

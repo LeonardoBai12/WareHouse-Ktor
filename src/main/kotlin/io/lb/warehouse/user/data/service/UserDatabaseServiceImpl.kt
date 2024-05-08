@@ -25,11 +25,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         statement.executeUpdate(loadQueryFromFile(CREATE_TABLE_USER_DATA))
     }
 
-    /**
-     * Creates a new user in the database.
-     *
-     * @param user The user data to insert.
-     */
     override suspend fun createUser(user: UserData) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(INSERT_USER))) {
             setObject(1, UUID.fromString(user.userId))
@@ -41,11 +36,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
-    /**
-     * Updates an existing user in the database.
-     *
-     * @param user The updated user data.
-     */
     override suspend fun updateUser(user: UserData) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_USER))) {
             setString(1, user.userName)
@@ -56,12 +46,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
-    /**
-     * Updates the password of a user in the database.
-     *
-     * @param userId The ID of the user whose password to update.
-     * @param newPassword The new password.
-     */
     override suspend fun updatePassword(userId: String, newPassword: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(UPDATE_PASSWORD))) {
             setString(1, newPassword)
@@ -70,11 +54,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
-    /**
-     * Deletes a user from the database.
-     *
-     * @param userId The ID of the user to delete.
-     */
     override suspend fun deleteUser(userId: String) = withContext(Dispatchers.IO) {
         with(connection.prepareStatement(loadQueryFromFile(DELETE_USER))) {
             setObject(1, UUID.fromString(userId))
@@ -82,12 +61,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
-    /**
-     * Retrieves a user by ID from the database.
-     *
-     * @param userId The ID of the user to retrieve.
-     * @return The user data, or null if not found.
-     */
     override suspend fun getUserById(userId: String): UserData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_ID))
         statement.setObject(1, UUID.fromString(userId))
@@ -106,12 +79,6 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
-    /**
-     * Checks if an email is already in use in the database.
-     *
-     * @param email The email to check.
-     * @return True if the email is already in use, false otherwise.
-     */
     override suspend fun isEmailAlreadyInUse(email: String): Boolean = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
         statement.setString(1, email)

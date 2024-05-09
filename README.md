@@ -21,6 +21,7 @@ The application is built using the following technologies:
 * [MockK](https://mockk.io) for mocking objects in unit tests.
 * [GitHub Actions](https://docs.github.com/pt/actions/learn-github-actions) for Continuous Integration/Continuous Deployment (CI/CD).
 * [Dokka](https://github.com/Kotlin/dokka) for generating documentation.
+* [Koin](https://insert-koin.io/docs/quickstart/ktor/) for dependencies injection.
 
 ## Security
 

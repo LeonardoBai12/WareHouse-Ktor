@@ -22,13 +22,13 @@ import org.junit.jupiter.api.Test
 import java.sql.Statement
 import java.util.UUID
 
-class WareDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WARE) {
+class WareDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WARE) {
     private lateinit var service: WareDatabaseService
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        service = WareDatabaseService(connection)
+        service = WareDatabaseServiceImpl(connection)
     }
 
     @Test

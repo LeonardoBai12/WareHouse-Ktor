@@ -21,13 +21,13 @@ import org.junit.jupiter.api.Test
 import java.sql.Statement.RETURN_GENERATED_KEYS
 import java.util.UUID
 
-class WithdrawDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
+class WithdrawDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
     private lateinit var service: WithdrawDatabaseService
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        service = WithdrawDatabaseService(connection)
+        service = WithdrawDatabaseServiceImpl(connection)
     }
 
     @Test

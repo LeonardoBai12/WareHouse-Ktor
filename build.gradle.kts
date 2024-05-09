@@ -2,6 +2,7 @@ val ktorVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 val postgresVersion: String by project
+val koinVersion: String by project
 val coroutinesVersion: String by project
 val h2Version: String by project
 
@@ -21,7 +22,7 @@ tasks.dokkaHtml {
         skipEmptyPackages.set(true)
 
         perPackageOption {
-            matchingRegex.set(".*.(core).*")
+            matchingRegex.set(".*.(core|di|util).*")
             suppress.set(true)
         }
     }
@@ -63,8 +64,8 @@ fun Build_gradle.fileTreeExclusions() =
             "**/session/**",
             "**/model/**",
             "**/plugins/**",
+            "**/di/**",
             "**/security/**",
-            "**/Application.kt",
         )
     }
 
@@ -103,6 +104,8 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
+    implementation("io.insert-koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
     implementation("io.ktor:ktor-server-sessions:$ktorVersion")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("com.google.code.gson:gson:2.10.1")

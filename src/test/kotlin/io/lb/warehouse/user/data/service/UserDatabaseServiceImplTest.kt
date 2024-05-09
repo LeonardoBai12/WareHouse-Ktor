@@ -23,13 +23,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class UserDatabaseServiceTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
+class UserDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
     private lateinit var service: UserDatabaseService
 
     @BeforeEach
     override fun setUp() {
         super.setUp()
-        service = UserDatabaseService(connection)
+        service = UserDatabaseServiceImpl(connection)
     }
 
     @Test

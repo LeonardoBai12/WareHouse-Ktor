@@ -9,8 +9,10 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
+import org.koin.ktor.ext.inject
 import java.sql.SQLException
 
 /**
@@ -29,10 +31,10 @@ import java.sql.SQLException
  *
  * Get deposits by ware UUID:
  * [/api/depositsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#03bbb3f7-1a9d-452d-965c-388e73a4eb59)
- *
- * @param depositService Service class for interacting with the deposit table in the PostgreSQL database.
  */
-fun Application.depositRoutes(depositService: DepositDatabaseService) {
+fun Application.depositRoutes() {
+    val useCases by inject<DepositUseCases>()
+
     routing {
         authenticate {
             post("/api/createDeposit") {
@@ -40,13 +42,13 @@ fun Application.depositRoutes(depositService: DepositDatabaseService) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
-
                 try {
-                    val id = depositService.insertDeposit(deposit)
+                    val id = useCases.createDepositUseCase(deposit)
                     call.respond(HttpStatusCode.Created, id)
                 } catch (e: SQLException) {
-                    call.respond(HttpStatusCode.Forbidden, e.localizedMessage)
-                    return@post
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
 
@@ -55,48 +57,43 @@ fun Application.depositRoutes(depositService: DepositDatabaseService) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val deposit = depositService.getDepositById(id) ?: run {
-                    call.respond(HttpStatusCode.NotFound, "There is no deposits with such ID")
-                    return@get
+                try {
+                    val deposit = useCases.getDepositByIDUseCase(id)
+                    call.respond(HttpStatusCode.OK, deposit)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
-                call.respond(HttpStatusCode.OK, deposit)
             }
 
             get("/api/depositsCreatedByUser") {
+                val userId = call.parameters["userId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
                 try {
-                    val userId = call.parameters["userId"] ?: run {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@get
-                    }
-                    val deposits = depositService.getDepositsByUserId(userId)
-
-                    if (deposits.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound, "There is no deposits for such user")
-                        return@get
-                    }
-
+                    val deposits = useCases.getDepositsByUserIdUseCase(userId)
                     call.respond(HttpStatusCode.OK, deposits)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.NotFound, "There is no deposits for such user")
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
 
             get("/api/depositsByWareId") {
+                val userId = call.parameters["wareId"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
                 try {
-                    val wareId = call.parameters["wareId"] ?: run {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@get
-                    }
-                    val deposits = depositService.getDepositsByWareId(wareId)
-
-                    if (deposits.isEmpty()) {
-                        call.respond(HttpStatusCode.NotFound, "There is no deposits for such ware")
-                        return@get
-                    }
-
-                    call.respond(HttpStatusCode.OK, deposits)
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.NotFound, "There is no deposits for such ware")
+                    val deposit = useCases.getDepositsByWareIdUseCase(userId)
+                    call.respond(HttpStatusCode.OK, deposit)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
         }

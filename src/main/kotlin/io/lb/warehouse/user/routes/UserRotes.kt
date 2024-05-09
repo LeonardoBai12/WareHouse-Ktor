@@ -18,18 +18,15 @@ import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
 import io.ktor.util.generateNonce
 import io.ktor.util.pipeline.PipelineContext
-import io.lb.warehouse.core.extensions.encrypt
-import io.lb.warehouse.core.extensions.passwordCheck
 import io.lb.warehouse.core.session.WarehouseSession
-import io.lb.warehouse.security.data.model.TokenClaim
-import io.lb.warehouse.security.data.model.TokenConfig
-import io.lb.warehouse.security.generateToken
+import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.user.data.model.ProtectedUserRequest
 import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
-import io.lb.warehouse.user.data.model.UserData
 import io.lb.warehouse.user.data.model.UserUpdateRequest
-import io.lb.warehouse.user.data.service.UserDatabaseService
+import io.lb.warehouse.user.domain.use_cases.UserUseCases
+import org.koin.ktor.ext.inject
+import java.sql.SQLException
 
 /**
  * Extension function with routes related to user operations.
@@ -56,14 +53,10 @@ import io.lb.warehouse.user.data.service.UserDatabaseService
  *
  * Delete user:
  * [/api/deleteUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#44e9c25d-ef79-446b-8dca-be4934599061)
- *
- * @param tokenConfig Data class representing token configurations.
- * @param userService Service class for interacting with the user data table in the PostgreSQL database.
  */
-fun Application.userRoutes(
-    tokenConfig: TokenConfig,
-    userService: UserDatabaseService
-) {
+fun Application.userRoutes() {
+    val useCases by inject<UserUseCases>()
+
     routing {
         post("/api/signUp") {
             val user = call.receiveNullable<UserCreateRequest>() ?: run {
@@ -76,29 +69,14 @@ fun Application.userRoutes(
                 return@post
             }
 
-            if (!validateEmail(userService, user.email)) {
-                return@post
+            try {
+                val userId = useCases.signUpUseCase(user)
+                call.respond(HttpStatusCode.Created, userId)
+            } catch (e: SQLException) {
+                call.respond(HttpStatusCode.Forbidden, e.message.toString())
+            } catch (e: WareHouseException) {
+                call.respond(e.code, e.message.toString())
             }
-
-            if (user.userName.isBlank()) {
-                call.respond(HttpStatusCode.Conflict, "User must have a name.")
-                return@post
-            }
-
-            if (user.password.length < 8) {
-                call.respond(HttpStatusCode.Conflict, "Password must have more than 8 characters.")
-                return@post
-            }
-
-            val hashedPassword = user.password.encrypt()
-            val userData = UserData(
-                userName = user.userName,
-                password = hashedPassword,
-                email = user.email,
-                profilePictureUrl = user.profilePictureUrl,
-            )
-            userService.createUser(userData)
-            call.respond(HttpStatusCode.Created, userData.userId)
         }
 
         get("/api/login") {
@@ -117,19 +95,8 @@ fun Application.userRoutes(
                 return@get
             }
 
-            validatePassword(
-                userService = userService,
-                userId = userId,
-                password = request.password,
-            ) {
-                val token = generateToken(
-                    config = tokenConfig,
-                    TokenClaim(
-                        name = "userId",
-                        value = userId
-                    )
-                )
-
+            try {
+                val token = useCases.loginUseCase(userId, request.password)
                 call.sessions.set(
                     WarehouseSession(
                         clientId = userId,
@@ -138,6 +105,10 @@ fun Application.userRoutes(
                 )
 
                 call.respond(HttpStatusCode.OK, token)
+            } catch (e: SQLException) {
+                call.respond(HttpStatusCode.Forbidden, e.message.toString())
+            } catch (e: WareHouseException) {
+                call.respond(e.code, e.message.toString())
             }
         }
 
@@ -147,9 +118,14 @@ fun Application.userRoutes(
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                userService.getUserById(userId)?.let {
-                    call.respond(HttpStatusCode.OK, it.copy(password = null))
-                } ?: call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
+                try {
+                    val user = useCases.getUserByIdUseCase(userId)
+                    call.respond(HttpStatusCode.OK, user.copy(password = null))
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
+                }
             }
 
             put("/api/updateUser") {
@@ -157,36 +133,21 @@ fun Application.userRoutes(
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
-
                 if (!validateSession(userId)) {
                     return@put
                 }
-
                 val user = call.receiveNullable<UserUpdateRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
 
-                if (user.userName != null && user.userName.isBlank()) {
-                    call.respond(HttpStatusCode.Conflict, "User must have a name.")
-                    return@put
-                }
-
-                if (!validateEmail(userService, user.email)) {
-                    return@put
-                }
-
-                validatePassword(
-                    userService = userService,
-                    userId = userId,
-                    password = user.password,
-                ) {
-                    val updatedUser = it.copy(
-                        userName = user.userName ?: it.userName,
-                        email = user.email ?: it.email,
-                        profilePictureUrl = user.profilePictureUrl ?: it.profilePictureUrl,
-                    )
-                    userService.updateUser(updatedUser)
+                try {
+                    useCases.updateUserUseCase(userId, user)
+                    call.respond(HttpStatusCode.OK, userId)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
 
@@ -195,27 +156,21 @@ fun Application.userRoutes(
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
-
                 if (!validateSession(userId)) {
                     return@put
                 }
-
                 val request = call.receiveNullable<UpdatePasswordRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
 
-                if (request.newPassword.length < 8) {
-                    call.respond(HttpStatusCode.Conflict, "Password must have more than 8 characters.")
-                    return@put
-                }
-
-                validatePassword(
-                    userService = userService,
-                    userId = userId,
-                    password = request.password,
-                ) {
-                    userService.updatePassword(userId, request.newPassword.encrypt()!!)
+                try {
+                    useCases.updatePasswordUseCase(userId, request.password, request.newPassword)
+                    call.respond(HttpStatusCode.OK)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
 
@@ -224,22 +179,21 @@ fun Application.userRoutes(
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
-
                 if (!validateSession(userId)) {
                     return@delete
                 }
-
                 val request = call.receiveNullable<ProtectedUserRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
 
-                validatePassword(
-                    userService = userService,
-                    userId = userId,
-                    password = request.password,
-                ) {
-                    userService.deleteUser(userId)
+                try {
+                    useCases.deleteUserUseCase(userId, request.password)
+                    call.respond(HttpStatusCode.OK)
+                } catch (e: SQLException) {
+                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
+                } catch (e: WareHouseException) {
+                    call.respond(e.code, e.message.toString())
                 }
             }
 
@@ -251,47 +205,11 @@ fun Application.userRoutes(
     }
 }
 
-private suspend fun PipelineContext<*, ApplicationCall>.validatePassword(
-    userService: UserDatabaseService,
-    userId: String,
-    password: String,
-    block: suspend (UserData) -> Unit
-) {
-    val storedUser = userService.getUserById(userId) ?: run {
-        call.respond(HttpStatusCode.NotFound, "There is no user with such ID")
-        return
-    }
-
-    password.takeIf { it.isEmpty() }?.let {
-        call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-        return
-    }
-
-    storedUser.takeIf {
-        password.passwordCheck(it.password!!)
-    }?.let {
-        block.invoke(storedUser)
-        call.respond(HttpStatusCode.OK, userId)
-    } ?: call.respond(HttpStatusCode.Unauthorized, "Invalid password")
-}
-
 private suspend fun PipelineContext<*, ApplicationCall>.validateSession(userId: String): Boolean {
     val authenticatedUserId = call.sessions.get<WarehouseSession>()?.clientId
 
     if (userId != authenticatedUserId) {
         call.respond(HttpStatusCode.Unauthorized, "You are not authorized to update this user.")
-        return false
-    }
-
-    return true
-}
-
-private suspend fun PipelineContext<*, ApplicationCall>.validateEmail(
-    userService: UserDatabaseService,
-    email: String?
-): Boolean {
-    if (email != null && userService.isEmailAlreadyInUse(email)) {
-        call.respond(HttpStatusCode.Conflict, "Email already in use by another user.")
         return false
     }
 

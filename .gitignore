@@ -27,4 +27,4 @@ local.properties
 *.at
 /build
 /.gradle
-/build
+*.DS_Store

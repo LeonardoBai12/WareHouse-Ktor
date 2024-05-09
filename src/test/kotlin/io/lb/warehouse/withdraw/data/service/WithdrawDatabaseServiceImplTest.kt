@@ -10,8 +10,7 @@ import io.lb.warehouse.util.BaseServiceTest
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.CREATE_TABLE_WITHDRAW
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.INSERT_WITHDRAW
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_USER_ID
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_WARE_ID
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAW_BY_ID
 import io.mockk.every
 import io.mockk.verify
@@ -91,39 +90,21 @@ class WithdrawDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WITHDRAW) {
     }
 
     @Test
-    fun `Getting withdraws by unexistent user ID, should return empty list`() = runTest {
+    fun `Getting withdraws with no results, should return empty list`() = runTest {
         val userId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc"
+        val wareId = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
 
         every {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS_BY_USER_ID))
+            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS))
         } returns preparedStatement
         every { queryResult.next() } returns false
 
-        val result = service.getWithdrawsByUserId(userId)
+        val result = service.getWithdraws(userId, wareId)
 
         verify {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS_BY_USER_ID))
+            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS))
             preparedStatement.setObject(1, UUID.fromString(userId))
-            preparedStatement.executeQuery()
-        }
-
-        assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `Getting withdraws by unexistent ware ID, should return empty list`() = runTest {
-        val wareId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc"
-
-        every {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS_BY_WARE_ID))
-        } returns preparedStatement
-        every { queryResult.next() } returns false
-
-        val result = service.getWithdrawsByWareId(wareId)
-
-        verify {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WITHDRAWS_BY_WARE_ID))
-            preparedStatement.setObject(1, UUID.fromString(wareId))
+            preparedStatement.setObject(2, UUID.fromString(wareId))
             preparedStatement.executeQuery()
         }
 

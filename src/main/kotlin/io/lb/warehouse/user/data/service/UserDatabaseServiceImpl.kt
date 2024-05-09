@@ -79,6 +79,24 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
         }
     }
 
+    override suspend fun getUserByEmail(email: String): UserData? = withContext(Dispatchers.IO) {
+        val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
+        statement.setObject(1, UUID.fromString(email))
+        val resultSet = statement.executeQuery()
+
+        return@withContext if (resultSet.next()) {
+            UserData(
+                userId = resultSet.getString("user_id"),
+                userName = resultSet.getString("user_name"),
+                password = resultSet.getString("password"),
+                email = resultSet.getString("email"),
+                profilePictureUrl = resultSet.getString("profile_picture"),
+            )
+        } else {
+            null
+        }
+    }
+
     override suspend fun isEmailAlreadyInUse(email: String): Boolean = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
         statement.setString(1, email)

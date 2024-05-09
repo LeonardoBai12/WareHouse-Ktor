@@ -79,3 +79,10 @@ Contains the domain repositories for deposit data.
 
 # Package io.lb.warehouse.deposit.domain.use_cases
 Contains the use cases for deposit domain operations.
+
+# Package io.lb.warehouse.deposit.domain.model
+Contains the model classes for deposit domain operations.
+
+# Package io.lb.warehouse.withdraw.domain.model
+Contains the model classes for withdraw domain operations.
+

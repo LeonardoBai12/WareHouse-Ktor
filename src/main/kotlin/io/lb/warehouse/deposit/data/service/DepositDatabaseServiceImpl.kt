@@ -7,8 +7,7 @@ import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.CRE
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.CREATE_TABLE_DEPOSIT
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.CREATE_UPDATE_QUANTITY_FUNCTION
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.INSERT_DEPOSIT
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_USER_ID
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_WARE_ID
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSIT_BY_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -73,16 +72,27 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
         }
     }
 
-    override suspend fun getDepositsByUserId(userUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
+    override suspend fun getDeposits(
+        userUUID: String?,
+        wareUUID: String?
+    ): List<DepositData> = withContext(Dispatchers.IO) {
         val deposits = mutableListOf<DepositData>()
         val statement = connection.prepareStatement(
-            loadQueryFromFile(SELECT_DEPOSITS_BY_USER_ID)
+            loadQueryFromFile(SELECT_DEPOSITS)
         )
-        statement.setObject(1, UUID.fromString(userUUID))
+        val userUUIDFilter = userUUID?.let {
+            UUID.fromString(userUUID)
+        }
+        val wareUUIDFilter = wareUUID?.let {
+            UUID.fromString(wareUUID)
+        }
+        statement.setObject(1, userUUIDFilter)
+        statement.setObject(2, wareUUIDFilter)
         val resultSet = statement.executeQuery()
 
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
+            val userId = resultSet.getString("user_id")
             val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
             val timestamp = resultSet.getString("timestamp")
@@ -90,36 +100,8 @@ class DepositDatabaseServiceImpl(private val connection: Connection) : DepositDa
             deposits.add(
                 DepositData(
                     uuid = id,
-                    userId = userUUID,
-                    wareId = wareId,
-                    quantity = quantity,
-                    timestamp = timestamp
-                )
-            )
-        }
-
-        return@withContext deposits
-    }
-
-    override suspend fun getDepositsByWareId(wareUUID: String): List<DepositData> = withContext(Dispatchers.IO) {
-        val deposits = mutableListOf<DepositData>()
-        val statement = connection.prepareStatement(
-            loadQueryFromFile(SELECT_DEPOSITS_BY_WARE_ID)
-        )
-        statement.setObject(1, UUID.fromString(wareUUID))
-        val resultSet = statement.executeQuery()
-
-        while (resultSet.next()) {
-            val id = resultSet.getString("uuid")
-            val userId = resultSet.getString("user_id")
-            val quantity = resultSet.getDouble("quantity")
-            val timestamp = resultSet.getString("timestamp")
-
-            deposits.add(
-                DepositData(
-                    uuid = id,
                     userId = userId,
-                    wareId = wareUUID,
+                    wareId = wareId,
                     quantity = quantity,
                     timestamp = timestamp
                 )

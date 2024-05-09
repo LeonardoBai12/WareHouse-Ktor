@@ -2,6 +2,7 @@ package io.lb.warehouse.ware.domain.repository
 
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareData
+import io.lb.warehouse.ware.domain.model.WareParameters
 
 /**
  * Repository interface for interacting with ware data.
@@ -26,10 +27,10 @@ interface WareRepository {
     /**
      * Retrieves all wares associated with a user by their UUID.
      *
-     * @param userUUID The UUID of the user.
-     * @return A list of wares associated with the user.
+     * @param parameters Parameters used for querying ware data.
+     * @return A list of wares associated with the filters.
      */
-    suspend fun getWaresByUserId(userUUID: String): List<WareData>
+    suspend fun getWares(parameters: WareParameters): List<WareData>
 
     /**
      * Updates an existing ware.

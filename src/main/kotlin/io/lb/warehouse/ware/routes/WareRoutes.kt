@@ -13,7 +13,8 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.ware.data.model.WareCreateRequest
-import io.lb.warehouse.ware.data.model.WareSorting
+import io.lb.warehouse.ware.domain.model.WareParameters
+import io.lb.warehouse.ware.domain.model.WareSorting
 import io.lb.warehouse.ware.domain.use_cases.WareUseCases
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
@@ -32,8 +33,8 @@ import java.sql.SQLException
  * Get ware by UUID:
  * [/api/ware](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#5fd92bd5-c595-4964-9563-3b6ed6c14bca)
  *
- * Get wares by user UUID:
- * [/api/waresCreatedByUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#d26339cb-c8f0-49d2-a87d-c75abbd07efa)
+ * Get wares list:
+ * [/api/wares](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#d26339cb-c8f0-49d2-a87d-c75abbd07efa)
  *
  * Delete ware:
  * [/api/deleteWare](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0e7b55ba-0ade-4e5b-bcb5-7ae7ea665204)
@@ -73,16 +74,19 @@ fun Application.wareRoutes() {
                 }
             }
 
-            get("/api/waresCreatedByUser") {
-                val userId = call.parameters["userId"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
+            get("/api/wares") {
                 val sortBy = call.parameters["sortBy"] ?: WareSorting.BY_TIMESTAMP.label
                 val order = call.parameters["order"] ?: WareSorting.SortOrder.ASCENDING.label
+                val parameters = WareParameters(
+                    userId = call.parameters["userId"],
+                    name = call.parameters["name"],
+                    brand = call.parameters["brand"],
+                    sortBy = sortBy,
+                    order = order,
+                )
 
                 try {
-                    val wares = useCases.getWaresByUserIdUseCase(userId, sortBy, order)
+                    val wares = useCases.getWaresUseCase(parameters)
                     call.respond(HttpStatusCode.OK, wares)
                 } catch (e: SQLException) {
                     call.respond(HttpStatusCode.Forbidden, e.message.toString())

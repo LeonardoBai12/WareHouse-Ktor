@@ -17,7 +17,7 @@ interface WareDatabaseService {
         const val DELETE_WARE = "ware/delete_ware.sql"
         const val INSERT_WARE = "ware/insert_ware.sql"
         const val SELECT_WARE_BY_ID = "ware/select_ware_by_id.sql"
-        const val SELECT_WARES_BY_USER_ID = "ware/select_ware_by_user_id.sql"
+        const val SELECT_WARES = "ware/select_wares.sql"
         const val UPDATE_WARE = "ware/update_ware.sql"
     }
 
@@ -40,10 +40,16 @@ interface WareDatabaseService {
     /**
      * Retrieves wares by user ID from the database.
      *
-     * @param userUUID The UUID of the user.
+     * @param userIdFilter The ID of the user associated with the ware, or null if not specified.
+     * @param nameFilter The name of the ware, or null if not specified.
+     * @param brandFilter The brand of the ware, or null if not specified.
      * @return List of wares associated with the user.
      */
-    suspend fun getWaresByUserId(userUUID: String): List<WareData>
+    suspend fun getWares(
+        nameFilter: String?,
+        brandFilter: String?,
+        userIdFilter: String?
+    ): List<WareData>
 
     /**
      * Updates a ware in the database.

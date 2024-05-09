@@ -2,6 +2,7 @@ package io.lb.warehouse.withdraw.domain.repository
 
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
+import io.lb.warehouse.withdraw.domain.model.WithdrawParameters
 
 /**
  * Repository interface for interacting with withdrawal data.
@@ -26,16 +27,8 @@ interface WithdrawRepository {
     /**
      * Retrieves all withdrawal requests associated with a user by their UUID.
      *
-     * @param userUUID The UUID of the user.
+     * @param parameters Parameters used for querying withdraw data.
      * @return A list of withdrawal requests associated with the user.
      */
-    suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData>
-
-    /**
-     * Retrieves all withdrawal requests associated with a ware by its UUID.
-     *
-     * @param wareUUID The UUID of the ware.
-     * @return A list of withdrawal requests associated with the ware.
-     */
-    suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData>
+    suspend fun getWithdraws(parameters: WithdrawParameters): List<WithdrawData>
 }

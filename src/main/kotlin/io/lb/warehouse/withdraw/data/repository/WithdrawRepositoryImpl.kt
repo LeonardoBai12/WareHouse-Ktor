@@ -3,6 +3,7 @@ package io.lb.warehouse.withdraw.data.repository
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.data.model.WithdrawData
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService
+import io.lb.warehouse.withdraw.domain.model.WithdrawParameters
 import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
 
 /**
@@ -19,11 +20,7 @@ class WithdrawRepositoryImpl(
         return service.getWithdrawById(id)
     }
 
-    override suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData> {
-        return service.getWithdrawsByUserId(userUUID)
-    }
-
-    override suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData> {
-        return service.getWithdrawsByWareId(wareUUID)
+    override suspend fun getWithdraws(parameters: WithdrawParameters): List<WithdrawData> {
+        return service.getWithdraws(parameters.userId, parameters.wareId)
     }
 }

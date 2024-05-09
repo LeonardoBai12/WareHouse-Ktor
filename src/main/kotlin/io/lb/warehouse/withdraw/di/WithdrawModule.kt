@@ -6,8 +6,7 @@ import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
 import io.lb.warehouse.withdraw.domain.use_cases.CreateWithdrawUseCase
 import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawByIDUseCase
-import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByUserIdUseCase
-import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByWareIdUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsUseCase
 import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
 import org.koin.dsl.module
 
@@ -22,8 +21,7 @@ val withdrawModule = module {
         WithdrawUseCases(
             createWithdrawUseCase = CreateWithdrawUseCase(get()),
             getWithdrawByIDUseCase = GetWithdrawByIDUseCase(get()),
-            getWithdrawsByUserIdUseCase = GetWithdrawsByUserIdUseCase(get()),
-            getWithdrawsByWareIdUseCase = GetWithdrawsByWareIdUseCase(get()),
+            getWithdrawsUseCase = GetWithdrawsUseCase(get()),
         )
     }
 }

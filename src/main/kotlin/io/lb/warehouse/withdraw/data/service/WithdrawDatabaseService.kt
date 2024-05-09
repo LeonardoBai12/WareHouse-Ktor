@@ -19,8 +19,7 @@ interface WithdrawDatabaseService {
         const val CREATE_TABLE_WITHDRAW = "withdraw/create_table_withdraw.sql"
         const val INSERT_WITHDRAW = "withdraw/insert_withdraw.sql"
         const val SELECT_WITHDRAW_BY_ID = "withdraw/select_withdraw_by_id.sql"
-        const val SELECT_WITHDRAWS_BY_USER_ID = "withdraw/select_withdraw_by_user_id.sql"
-        const val SELECT_WITHDRAWS_BY_WARE_ID = "withdraw/select_withdraw_by_ware_id.sql"
+        const val SELECT_WITHDRAWS = "withdraw/select_withdraws.sql"
     }
 
     /**
@@ -43,15 +42,8 @@ interface WithdrawDatabaseService {
      * Retrieves withdrawals by user ID from the database.
      *
      * @param userUUID The UUID of the user.
-     * @return List of withdrawals associated with the user.
-     */
-    suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData>
-
-    /**
-     * Retrieves withdrawals by ware ID from the database.
-     *
      * @param wareUUID The UUID of the ware.
-     * @return List of withdrawals associated with the ware.
+     * @return List of withdrawals associated with the filters.
      */
-    suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData>
+    suspend fun getWithdraws(userUUID: String?, wareUUID: String?): List<WithdrawData>
 }

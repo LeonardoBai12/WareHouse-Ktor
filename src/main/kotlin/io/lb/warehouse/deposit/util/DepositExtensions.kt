@@ -3,7 +3,7 @@ package io.lb.warehouse.deposit.util
 import io.ktor.http.HttpStatusCode
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.deposit.data.model.DepositData
-import io.lb.warehouse.deposit.domain.model.DepositsSorting
+import io.lb.warehouse.deposit.domain.model.DepositSorting
 
 /**
  * Sorts a list of deposit data based on the specified sorting criteria and order.
@@ -18,13 +18,13 @@ fun List<DepositData>.getOrderedDeposits(
     order: String,
 ): List<DepositData> {
     return when (order) {
-        DepositsSorting.SortOrder.ASCENDING.label -> {
+        DepositSorting.SortOrder.ASCENDING.label -> {
             sortedBy {
                 it.getSortingTypeByLabel(sortBy)
             }
         }
 
-        DepositsSorting.SortOrder.DESCENDING.label -> {
+        DepositSorting.SortOrder.DESCENDING.label -> {
             sortedByDescending {
                 it.getSortingTypeByLabel(sortBy)
             }
@@ -47,19 +47,19 @@ fun List<DepositData>.getOrderedDeposits(
  * @throws WareHouseException if the sorting criteria is invalid.
  */
 private fun DepositData.getSortingTypeByLabel(sortBy: String) = when (sortBy) {
-    DepositsSorting.BY_USER.label -> {
+    DepositSorting.BY_USER.label -> {
         userId
     }
 
-    DepositsSorting.BY_WARE.label -> {
+    DepositSorting.BY_WARE.label -> {
         wareId
     }
 
-    DepositsSorting.BY_QUANTITY.label -> {
+    DepositSorting.BY_QUANTITY.label -> {
         quantity.toString()
     }
 
-    DepositsSorting.BY_TIMESTAMP.label -> {
+    DepositSorting.BY_TIMESTAMP.label -> {
         timestamp
     }
 

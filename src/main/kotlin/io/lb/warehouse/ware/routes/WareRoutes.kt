@@ -13,8 +13,8 @@ import io.ktor.server.routing.put
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.ware.data.model.WareCreateRequest
-import io.lb.warehouse.ware.domain.model.WareSorting
 import io.lb.warehouse.ware.domain.model.WareParameters
+import io.lb.warehouse.ware.domain.model.WareSorting
 import io.lb.warehouse.ware.domain.use_cases.WareUseCases
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
@@ -79,10 +79,10 @@ fun Application.wareRoutes() {
                 val order = call.parameters["order"] ?: WareSorting.SortOrder.ASCENDING.label
                 val parameters = WareParameters(
                     userId = call.parameters["userId"],
-                        name = call.parameters["name"],
-                        brand = call.parameters["brand"],
-                        sortBy = sortBy,
-                        order = order,
+                    name = call.parameters["name"],
+                    brand = call.parameters["brand"],
+                    sortBy = sortBy,
+                    order = order,
                 )
 
                 try {

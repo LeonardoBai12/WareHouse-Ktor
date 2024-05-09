@@ -12,7 +12,7 @@ import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.domain.model.DepositParameters
-import io.lb.warehouse.deposit.domain.model.DepositsSorting
+import io.lb.warehouse.deposit.domain.model.DepositSorting
 import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
@@ -67,8 +67,8 @@ fun Application.depositRoutes() {
             }
 
             get("/api/deposits") {
-                val sortBy = call.parameters["sortBy"] ?: DepositsSorting.BY_TIMESTAMP.label
-                val order = call.parameters["order"] ?: DepositsSorting.SortOrder.ASCENDING.label
+                val sortBy = call.parameters["sortBy"] ?: DepositSorting.BY_TIMESTAMP.label
+                val order = call.parameters["order"] ?: DepositSorting.SortOrder.ASCENDING.label
                 val parameters = DepositParameters(
                     userId = call.parameters["userId"],
                     wareId = call.parameters["wareId"],

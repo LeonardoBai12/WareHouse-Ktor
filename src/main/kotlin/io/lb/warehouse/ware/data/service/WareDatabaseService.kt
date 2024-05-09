@@ -2,7 +2,6 @@ package io.lb.warehouse.ware.data.service
 
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareData
-import io.lb.warehouse.ware.domain.model.WareParameters
 import org.jetbrains.annotations.VisibleForTesting
 
 /**

@@ -22,7 +22,7 @@ import io.lb.warehouse.ware.domain.repository.WareRepository
 import io.lb.warehouse.ware.domain.use_cases.CreateWareUseCase
 import io.lb.warehouse.ware.domain.use_cases.DeleteWareUseCase
 import io.lb.warehouse.ware.domain.use_cases.GetWareByIdUseCase
-import io.lb.warehouse.ware.domain.use_cases.GetWaresByUserIdUseCase
+import io.lb.warehouse.ware.domain.use_cases.GetWaresUseCase
 import io.lb.warehouse.ware.domain.use_cases.UpdateWareUseCase
 import io.lb.warehouse.ware.domain.use_cases.WareUseCases
 import io.mockk.coEvery
@@ -313,30 +313,19 @@ class WareRoutesTest {
     }
 
     @Test
-    fun `Getting by userId with no id param, should return BadRequesst`() = testApplication {
-        setup()
-
-        val response = client.get("/api/waresCreatedByUser") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-    }
-
-    @Test
     fun `Getting by unexistent userId, should return NotFound`() = testApplication {
         val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf()
+        coEvery { service.getWares(null, null, userId) } returns listOf()
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There are no wares for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no wares for such filters")
     }
 
     @Test
@@ -350,13 +339,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
         }
@@ -380,13 +369,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("order", "unexistent")
@@ -407,13 +396,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "unexistent")
@@ -434,13 +423,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "name")
@@ -465,13 +454,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "name")
@@ -496,13 +485,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "brand")
@@ -527,13 +516,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "brand")
@@ -558,13 +547,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "quantity")
@@ -589,13 +578,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "quantity")
@@ -620,13 +609,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "timestamp")
@@ -651,13 +640,13 @@ class WareRoutesTest {
 
         setup()
 
-        coEvery { service.getWaresByUserId(userId) } returns listOf(
+        coEvery { service.getWares(null, null, userId) } returns listOf(
             ware1,
             ware2,
             ware3,
         )
 
-        val response = client.get("/api/waresCreatedByUser") {
+        val response = client.get("/api/wares") {
             setupRequest()
             parameter("userId", userId)
             parameter("sortBy", "timestamp")
@@ -732,7 +721,7 @@ class WareRoutesTest {
                 createWareUseCase = CreateWareUseCase(get()),
                 deleteWareUseCase = DeleteWareUseCase(get()),
                 getWareByIdUseCase = GetWareByIdUseCase(get()),
-                getWaresByUserIdUseCase = GetWaresByUserIdUseCase(get()),
+                getWaresUseCase = GetWaresUseCase(get()),
                 updateWareUseCase = UpdateWareUseCase(get()),
             )
         }

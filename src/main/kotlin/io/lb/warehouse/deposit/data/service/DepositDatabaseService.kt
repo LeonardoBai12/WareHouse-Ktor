@@ -19,8 +19,7 @@ interface DepositDatabaseService {
         const val CREATE_TABLE_DEPOSIT = "deposit/create_table_deposit.sql"
         const val INSERT_DEPOSIT = "deposit/insert_deposit.sql"
         const val SELECT_DEPOSIT_BY_ID = "deposit/select_deposit_by_id.sql"
-        const val SELECT_DEPOSITS_BY_USER_ID = "deposit/select_deposit_by_user_id.sql"
-        const val SELECT_DEPOSITS_BY_WARE_ID = "deposit/select_deposit_by_ware_id.sql"
+        const val SELECT_DEPOSITS = "deposit/select_deposits.sql"
     }
 
     /**
@@ -43,15 +42,8 @@ interface DepositDatabaseService {
      * Retrieves deposits by user ID from the database.
      *
      * @param userUUID The UUID of the user.
+     * @param wareUUID The UUID of the ware.
      * @return List of deposits associated with the user.
      */
-    suspend fun getDepositsByUserId(userUUID: String): List<DepositData>
-
-    /**
-     * Retrieves deposits by ware ID from the database.
-     *
-     * @param wareUUID The UUID of the ware.
-     * @return List of deposits associated with the ware.
-     */
-    suspend fun getDepositsByWareId(wareUUID: String): List<DepositData>
+    suspend fun getDeposits(userUUID: String?, wareUUID: String?): List<DepositData>
 }

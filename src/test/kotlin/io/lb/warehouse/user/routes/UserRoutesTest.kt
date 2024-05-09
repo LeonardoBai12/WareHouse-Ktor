@@ -879,18 +879,17 @@ class UserRoutesTest {
     }
 
     @Test
-    fun `Loggin in with unexistent user, should return BadRequest`() = testApplication {
-        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+    fun `Loggin in with unexistent user, should return NotFound`() = testApplication {
         setup(bypass = false)
 
-        coEvery { service.getUserById(uuid) } returns null
+        coEvery { service.getUserByEmail("unexistent@email.com") } returns null
 
         val response = client.get("/api/login") {
             setupRequest()
-            parameter("userId", uuid)
             setBody(
                 """
                 {
+                    "email": "unexistent@email.com",
                     "password": "wrongpassword"
                 }
                 """.trimIndent()
@@ -898,18 +897,7 @@ class UserRoutesTest {
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There is no user with such ID")
-    }
-
-    @Test
-    fun `Loggin in without id param, should return BadRequest`() = testApplication {
-        setup(bypass = false)
-
-        val response = client.get("/api/login") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
+        assertThat(response.bodyAsText()).isEqualTo("There is no user with such email")
     }
 
     @Test
@@ -919,7 +907,6 @@ class UserRoutesTest {
 
         val response = client.get("/api/login") {
             setupRequest()
-            parameter("userId", uuid)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
@@ -931,19 +918,19 @@ class UserRoutesTest {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup(bypass = false)
 
-        coEvery { service.getUserById(uuid) } returns UserData(
+        coEvery { service.getUserByEmail("example@email.com") } returns UserData(
             userId = uuid,
             userName = "oldTestUser",
             password = "testpassword".encrypt(),
-            email = "testold@example.com"
+            email = "example@email.com"
         )
 
         val response = client.get("/api/login") {
             setupRequest()
-            parameter("userId", uuid)
             setBody(
                 """
                 {
+                    "email": "example@email.com",
                     "password": "wrongpassword"
                 }
                 """.trimIndent()
@@ -959,19 +946,19 @@ class UserRoutesTest {
         val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
         setup(bypass = false)
 
-        coEvery { service.getUserById(uuid) } returns UserData(
+        coEvery { service.getUserByEmail("example@email.com") } returns UserData(
             userId = uuid,
             userName = "oldTestUser",
             password = "testpassword".encrypt(),
-            email = "testold@example.com"
+            email = "example@email.com"
         )
 
         val response = client.get("/api/login") {
             setupRequest()
-            parameter("userId", uuid)
             setBody(
                 """
                 {
+                    "email": "example@email.com",
                     "password": "testpassword"
                 }
                 """.trimIndent()

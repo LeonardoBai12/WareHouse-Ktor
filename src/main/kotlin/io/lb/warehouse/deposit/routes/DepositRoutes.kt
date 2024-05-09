@@ -11,6 +11,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
+import io.lb.warehouse.deposit.domain.model.DepositParameters
+import io.lb.warehouse.deposit.domain.model.DepositsSorting
 import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
 import org.koin.ktor.ext.inject
 import java.sql.SQLException
@@ -26,11 +28,8 @@ import java.sql.SQLException
  * Get deposit by UUID:
  * [/api/deposit](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#105e8197-f646-440a-9eff-40bce2c3721d)
  *
- * Get deposits by user UUID:
- * [/api/depositsCreatedByUser](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0c6485b0-c820-4bc8-99f2-2c4f1b33389b)
- *
- * Get deposits by ware UUID:
- * [/api/depositsByWareId](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#03bbb3f7-1a9d-452d-965c-388e73a4eb59)
+ * Get deposits list:
+ * [/api/deposits](https://documenter.getpostman.com/view/28162587/2sA3JGeihC#0c6485b0-c820-4bc8-99f2-2c4f1b33389b)
  */
 fun Application.depositRoutes() {
     val useCases by inject<DepositUseCases>()
@@ -67,29 +66,18 @@ fun Application.depositRoutes() {
                 }
             }
 
-            get("/api/depositsCreatedByUser") {
-                val userId = call.parameters["userId"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
+            get("/api/deposits") {
+                val sortBy = call.parameters["sortBy"] ?: DepositsSorting.BY_TIMESTAMP.label
+                val order = call.parameters["order"] ?: DepositsSorting.SortOrder.ASCENDING.label
+                val parameters = DepositParameters(
+                    userId = call.parameters["userId"],
+                    wareId = call.parameters["wareId"],
+                    sortBy = sortBy,
+                    order = order,
+                )
                 try {
-                    val deposits = useCases.getDepositsByUserIdUseCase(userId)
+                    val deposits = useCases.getDepositsUseCase(parameters)
                     call.respond(HttpStatusCode.OK, deposits)
-                } catch (e: SQLException) {
-                    call.respond(HttpStatusCode.Forbidden, e.message.toString())
-                } catch (e: WareHouseException) {
-                    call.respond(e.code, e.message.toString())
-                }
-            }
-
-            get("/api/depositsByWareId") {
-                val userId = call.parameters["wareId"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-                try {
-                    val deposit = useCases.getDepositsByWareIdUseCase(userId)
-                    call.respond(HttpStatusCode.OK, deposit)
                 } catch (e: SQLException) {
                     call.respond(HttpStatusCode.Forbidden, e.message.toString())
                 } catch (e: WareHouseException) {

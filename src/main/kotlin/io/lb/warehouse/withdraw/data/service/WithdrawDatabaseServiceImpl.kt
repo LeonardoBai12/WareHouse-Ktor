@@ -7,8 +7,7 @@ import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.C
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.CREATE_TABLE_WITHDRAW
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.CREATE_UPDATE_QUANTITY_FUNCTION
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.INSERT_WITHDRAW
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_USER_ID
-import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS_BY_WARE_ID
+import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAWS
 import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseService.Companion.SELECT_WITHDRAW_BY_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -73,16 +72,27 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
         }
     }
 
-    override suspend fun getWithdrawsByUserId(userUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
+    override suspend fun getWithdraws(
+        userUUID: String?,
+        wareUUID: String?
+    ): List<WithdrawData> = withContext(Dispatchers.IO) {
         val withdraws = mutableListOf<WithdrawData>()
         val statement = connection.prepareStatement(
-            loadQueryFromFile(SELECT_WITHDRAWS_BY_USER_ID)
+            loadQueryFromFile(SELECT_WITHDRAWS)
         )
-        statement.setObject(1, UUID.fromString(userUUID))
+        val userUUIDFilter = userUUID?.let {
+            UUID.fromString(userUUID)
+        }
+        val wareUUIDFilter = wareUUID?.let {
+            UUID.fromString(wareUUID)
+        }
+        statement.setObject(1, userUUIDFilter)
+        statement.setObject(2, wareUUIDFilter)
         val resultSet = statement.executeQuery()
 
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
+            val userId = resultSet.getString("user_id")
             val wareId = resultSet.getString("ware_id")
             val quantity = resultSet.getDouble("quantity")
             val timestamp = resultSet.getString("timestamp")
@@ -90,36 +100,8 @@ class WithdrawDatabaseServiceImpl(private val connection: Connection) : Withdraw
             withdraws.add(
                 WithdrawData(
                     uuid = id,
-                    userId = userUUID,
-                    wareId = wareId,
-                    quantity = quantity,
-                    timestamp = timestamp,
-                )
-            )
-        }
-
-        return@withContext withdraws
-    }
-
-    override suspend fun getWithdrawsByWareId(wareUUID: String): List<WithdrawData> = withContext(Dispatchers.IO) {
-        val withdraws = mutableListOf<WithdrawData>()
-        val statement = connection.prepareStatement(
-            loadQueryFromFile(SELECT_WITHDRAWS_BY_WARE_ID)
-        )
-        statement.setObject(1, UUID.fromString(wareUUID))
-        val resultSet = statement.executeQuery()
-
-        while (resultSet.next()) {
-            val id = resultSet.getString("uuid")
-            val userId = resultSet.getString("user_id")
-            val quantity = resultSet.getDouble("quantity")
-            val timestamp = resultSet.getString("timestamp")
-
-            withdraws.add(
-                WithdrawData(
-                    uuid = id,
                     userId = userId,
-                    wareId = wareUUID,
+                    wareId = wareId,
                     quantity = quantity,
                     timestamp = timestamp,
                 )

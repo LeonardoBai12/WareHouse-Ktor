@@ -3,6 +3,7 @@ package io.lb.warehouse.ware.data.repository
 import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.service.WareDatabaseService
+import io.lb.warehouse.ware.domain.model.WareParameters
 import io.lb.warehouse.ware.domain.repository.WareRepository
 
 /**
@@ -19,8 +20,8 @@ class WareRepositoryImpl(
         return service.getWareById(id)
     }
 
-    override suspend fun getWaresByUserId(userUUID: String): List<WareData> {
-        return service.getWaresByUserId(userUUID)
+    override suspend fun getWares(parameters: WareParameters): List<WareData> {
+        return service.getWares(parameters.name, parameters.brand, parameters.userId)
     }
 
     override suspend fun updateWare(uuid: String, ware: WareCreateRequest): Int {

@@ -2,6 +2,7 @@ package io.lb.warehouse.deposit.domain.repository
 
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.model.DepositData
+import io.lb.warehouse.deposit.domain.model.DepositParameters
 
 /**
  * Repository interface for interacting with deposit data.
@@ -26,16 +27,8 @@ interface DepositRepository {
     /**
      * Retrieves all deposits associated with a user by their UUID.
      *
-     * @param userUUID The UUID of the user.
-     * @return A list of deposits associated with the user.
+     * @param parameters Parameters used for querying deposit data.
+     * @return A list of deposits associated with the filters.
      */
-    suspend fun getDepositsByUserId(userUUID: String): List<DepositData>
-
-    /**
-     * Retrieves all deposits associated with a ware by its UUID.
-     *
-     * @param wareUUID The UUID of the ware.
-     * @return A list of deposits associated with the ware.
-     */
-    suspend fun getDepositsByWareId(wareUUID: String): List<DepositData>
+    suspend fun getDeposits(parameters: DepositParameters): List<DepositData>
 }

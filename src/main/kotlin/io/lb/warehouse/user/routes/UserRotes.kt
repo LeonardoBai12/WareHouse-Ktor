@@ -20,6 +20,7 @@ import io.ktor.util.generateNonce
 import io.ktor.util.pipeline.PipelineContext
 import io.lb.warehouse.core.session.WarehouseSession
 import io.lb.warehouse.core.util.WareHouseException
+import io.lb.warehouse.user.data.model.LoginRequest
 import io.lb.warehouse.user.data.model.ProtectedUserRequest
 import io.lb.warehouse.user.data.model.UpdatePasswordRequest
 import io.lb.warehouse.user.data.model.UserCreateRequest
@@ -80,31 +81,26 @@ fun Application.userRoutes() {
         }
 
         get("/api/login") {
-            val userId = call.parameters["userId"] ?: run {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-
             call.sessions.get<WarehouseSession>()?.let {
                 call.respond(HttpStatusCode.Conflict, "There is already an user logged in.")
                 return@get
             }
 
-            val request = call.receiveNullable<ProtectedUserRequest>() ?: run {
+            val request = call.receiveNullable<LoginRequest>() ?: run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
 
             try {
-                val token = useCases.loginUseCase(userId, request.password)
+                val response = useCases.loginUseCase(request.email, request.password)
                 call.sessions.set(
                     WarehouseSession(
-                        clientId = userId,
+                        clientId = response.userId,
                         sessionId = generateNonce()
                     )
                 )
 
-                call.respond(HttpStatusCode.OK, token)
+                call.respond(HttpStatusCode.OK, response.token)
             } catch (e: SQLException) {
                 call.respond(HttpStatusCode.Forbidden, e.message.toString())
             } catch (e: WareHouseException) {

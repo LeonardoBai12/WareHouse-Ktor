@@ -1,4 +1,4 @@
-package io.lb.deposithouse.deposit.data.service
+package io.lb.warehouse.deposit.data.service
 
 import assertk.assertThat
 import assertk.assertions.isEmpty
@@ -7,13 +7,10 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import io.lb.warehouse.core.util.loadQueryFromFile
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.CREATE_TABLE_DEPOSIT
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.INSERT_DEPOSIT
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_USER_ID
-import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS_BY_WARE_ID
+import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSITS
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService.Companion.SELECT_DEPOSIT_BY_ID
-import io.lb.warehouse.deposit.data.service.DepositDatabaseServiceImpl
 import io.lb.warehouse.util.BaseServiceTest
 import io.mockk.every
 import io.mockk.verify
@@ -93,39 +90,21 @@ class DepositDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_DEPOSIT) {
     }
 
     @Test
-    fun `Getting deposits by unexistent user ID, should return empty list`() = runTest {
+    fun `Getting deposits with no results, should return empty list`() = runTest {
         val userId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc"
+        val wareId = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
 
         every {
-            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS_BY_USER_ID))
+            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS))
         } returns preparedStatement
         every { queryResult.next() } returns false
 
-        val result = service.getDepositsByUserId(userId)
+        val result = service.getDeposits(userId, wareId)
 
         verify {
-            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS_BY_USER_ID))
+            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS))
             preparedStatement.setObject(1, UUID.fromString(userId))
-            preparedStatement.executeQuery()
-        }
-
-        assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `Getting deposits by unexistent ware ID, should return empty list`() = runTest {
-        val wareId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc"
-
-        every {
-            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS_BY_WARE_ID))
-        } returns preparedStatement
-        every { queryResult.next() } returns false
-
-        val result = service.getDepositsByWareId(wareId)
-
-        verify {
-            connection.prepareStatement(loadQueryFromFile(SELECT_DEPOSITS_BY_WARE_ID))
-            preparedStatement.setObject(1, UUID.fromString(wareId))
+            preparedStatement.setObject(2, UUID.fromString(wareId))
             preparedStatement.executeQuery()
         }
 

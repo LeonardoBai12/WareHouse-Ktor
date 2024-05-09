@@ -3,6 +3,7 @@ package io.lb.warehouse.deposit.data.repository
 import io.lb.warehouse.deposit.data.model.DepositCreateRequest
 import io.lb.warehouse.deposit.data.model.DepositData
 import io.lb.warehouse.deposit.data.service.DepositDatabaseService
+import io.lb.warehouse.deposit.domain.model.DepositParameters
 import io.lb.warehouse.deposit.domain.repository.DepositRepository
 
 /**
@@ -19,11 +20,7 @@ class DepositRepositoryImpl(
         return service.getDepositById(id)
     }
 
-    override suspend fun getDepositsByUserId(userUUID: String): List<DepositData> {
-        return service.getDepositsByUserId(userUUID)
-    }
-
-    override suspend fun getDepositsByWareId(wareUUID: String): List<DepositData> {
-        return service.getDepositsByWareId(wareUUID)
+    override suspend fun getDeposits(parameters: DepositParameters): List<DepositData> {
+        return service.getDeposits(parameters.userId, parameters.wareId)
     }
 }

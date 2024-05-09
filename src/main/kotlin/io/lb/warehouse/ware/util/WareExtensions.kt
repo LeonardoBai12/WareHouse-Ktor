@@ -3,7 +3,7 @@ package io.lb.warehouse.ware.util
 import io.ktor.http.HttpStatusCode
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.ware.data.model.WareData
-import io.lb.warehouse.ware.data.model.WareSorting
+import io.lb.warehouse.ware.domain.model.WareSorting
 
 /**
  * Sorts a list of ware data based on the specified sorting criteria and order.

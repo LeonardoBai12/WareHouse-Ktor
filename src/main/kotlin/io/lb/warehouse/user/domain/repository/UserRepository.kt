@@ -48,6 +48,14 @@ interface UserRepository {
     suspend fun getUserById(userId: String): UserData?
 
     /**
+     * Retrieves a user by email.
+     *
+     * @param email The email of the user to retrieve.
+     * @return The user data, or null if not found.
+     */
+    suspend fun getUserByEmail(email: String): UserData?
+
+    /**
      * Checks if an email is already in use.
      *
      * @param email The email to check.

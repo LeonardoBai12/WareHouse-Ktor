@@ -18,8 +18,7 @@ import io.lb.warehouse.deposit.domain.repository.DepositRepository
 import io.lb.warehouse.deposit.domain.use_cases.CreateDepositUseCase
 import io.lb.warehouse.deposit.domain.use_cases.DepositUseCases
 import io.lb.warehouse.deposit.domain.use_cases.GetDepositByIDUseCase
-import io.lb.warehouse.deposit.domain.use_cases.GetDepositsByUserIdUseCase
-import io.lb.warehouse.deposit.domain.use_cases.GetDepositsByWareIdUseCase
+import io.lb.warehouse.deposit.domain.use_cases.GetDepositsUseCase
 import io.lb.warehouse.util.setupApplication
 import io.lb.warehouse.util.setupRequest
 import io.mockk.coEvery
@@ -132,30 +131,19 @@ class DepositRoutesTest {
     }
 
     @Test
-    fun `Getting by userId with no id param, should return BadRequesst`() = testApplication {
-        setup()
-
-        val response = client.get("/api/depositsCreatedByUser") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-    }
-
-    @Test
     fun `Getting by unexistent userId, should return NotFound`() = testApplication {
         val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         setup()
 
-        coEvery { service.getDepositsByUserId(userId) } returns listOf()
+        coEvery { service.getDeposits(userId, null) } returns listOf()
 
-        val response = client.get("/api/depositsCreatedByUser") {
+        val response = client.get("/api/deposits") {
             setupRequest()
             parameter("userId", userId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such filters")
     }
 
     @Test
@@ -166,7 +154,7 @@ class DepositRoutesTest {
 
         setup()
 
-        coEvery { service.getDepositsByUserId(userId) } returns listOf(
+        coEvery { service.getDeposits(userId, null) } returns listOf(
             DepositData(
                 uuid = uuid,
                 quantity = 500.0,
@@ -176,7 +164,7 @@ class DepositRoutesTest {
             )
         )
 
-        val response = client.get("/api/depositsCreatedByUser") {
+        val response = client.get("/api/deposits") {
             setupRequest()
             parameter("userId", userId)
         }
@@ -185,30 +173,19 @@ class DepositRoutesTest {
     }
 
     @Test
-    fun `Getting by wareId with no id param, should return BadRequesst`() = testApplication {
-        setup()
-
-        val response = client.get("/api/depositsByWareId") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-    }
-
-    @Test
     fun `Getting by unexistent wareId, should return NotFound`() = testApplication {
         val wareId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         setup()
 
-        coEvery { service.getDepositsByWareId(wareId) } returns listOf()
+        coEvery { service.getDeposits(null, wareId) } returns listOf()
 
-        val response = client.get("/api/depositsByWareId") {
+        val response = client.get("/api/deposits") {
             setupRequest()
             parameter("wareId", wareId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such ware")
+        assertThat(response.bodyAsText()).isEqualTo("There are no deposits for such filters")
     }
 
     @Test
@@ -219,7 +196,7 @@ class DepositRoutesTest {
 
         setup()
 
-        coEvery { service.getDepositsByWareId(wareId) } returns listOf(
+        coEvery { service.getDeposits(null, wareId) } returns listOf(
             DepositData(
                 uuid = uuid,
                 quantity = 500.0,
@@ -229,7 +206,7 @@ class DepositRoutesTest {
             )
         )
 
-        val response = client.get("/api/depositsByWareId") {
+        val response = client.get("/api/deposits") {
             setupRequest()
             parameter("wareId", wareId)
         }
@@ -254,8 +231,7 @@ class DepositRoutesTest {
             DepositUseCases(
                 createDepositUseCase = CreateDepositUseCase(get()),
                 getDepositByIDUseCase = GetDepositByIDUseCase(get()),
-                getDepositsByUserIdUseCase = GetDepositsByUserIdUseCase(get()),
-                getDepositsByWareIdUseCase = GetDepositsByWareIdUseCase(get()),
+                getDepositsUseCase = GetDepositsUseCase(get()),
             )
         }
     }

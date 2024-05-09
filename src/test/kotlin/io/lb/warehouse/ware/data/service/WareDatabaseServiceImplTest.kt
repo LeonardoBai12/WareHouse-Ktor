@@ -11,7 +11,7 @@ import io.lb.warehouse.ware.data.model.WareCreateRequest
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.CREATE_TABLE_WARE
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.DELETE_WARE
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.INSERT_WARE
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARES_BY_USER_ID
+import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARES
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARE_BY_ID
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.UPDATE_WARE
 import io.mockk.every
@@ -107,15 +107,17 @@ class WareDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_WARE) {
         val userId = "8bfcdc8a-5019-410b-afa8-e431ed9be4bc"
 
         every {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WARES_BY_USER_ID))
+            connection.prepareStatement(loadQueryFromFile(SELECT_WARES))
         } returns preparedStatement
         every { queryResult.next() } returns false
 
-        val result = service.getWaresByUserId(userId)
+        val result = service.getWares("name", "brand", userId)
 
         verify {
-            connection.prepareStatement(loadQueryFromFile(SELECT_WARES_BY_USER_ID))
-            preparedStatement.setObject(1, UUID.fromString(userId))
+            connection.prepareStatement(loadQueryFromFile(SELECT_WARES))
+            preparedStatement.setString(1, "name")
+            preparedStatement.setString(2, "brand")
+            preparedStatement.setObject(3, UUID.fromString(userId))
             preparedStatement.executeQuery()
         }
 

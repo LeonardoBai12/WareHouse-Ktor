@@ -6,7 +6,7 @@ import io.lb.warehouse.ware.data.model.WareData
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.CREATE_TABLE_WARE
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.DELETE_WARE
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.INSERT_WARE
-import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARES_BY_USER_ID
+import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARES
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.SELECT_WARE_BY_ID
 import io.lb.warehouse.ware.data.service.WareDatabaseService.Companion.UPDATE_WARE
 import kotlinx.coroutines.Dispatchers
@@ -87,16 +87,27 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
         }
     }
 
-    override suspend fun getWaresByUserId(userUUID: String): List<WareData> = withContext(Dispatchers.IO) {
+    override suspend fun getWares(
+        nameFilter: String?,
+        brandFilter: String?,
+        userIdFilter: String?
+    ): List<WareData> = withContext(Dispatchers.IO) {
         val wares = mutableListOf<WareData>()
         val statement = connection.prepareStatement(
-            loadQueryFromFile(SELECT_WARES_BY_USER_ID)
+            loadQueryFromFile(SELECT_WARES)
         )
-        statement.setObject(1, UUID.fromString(userUUID))
+        val userUUIDFilter = userIdFilter?.let {
+            UUID.fromString(userIdFilter)
+        }
+
+        statement.setString(1, nameFilter)
+        statement.setString(2, brandFilter)
+        statement.setObject(3, userUUIDFilter)
         val resultSet = statement.executeQuery()
 
         while (resultSet.next()) {
             val id = resultSet.getString("uuid")
+            val userId = resultSet.getString("user_id")
             val name = resultSet.getString("name")
             val brand = resultSet.getString("brand")
             val description = resultSet.getString("description")
@@ -110,7 +121,7 @@ class WareDatabaseServiceImpl(private val connection: Connection) : WareDatabase
             wares.add(
                 WareData(
                     uuid = id,
-                    userId = userUUID,
+                    userId = userId,
                     name = name,
                     brand = brand,
                     description = description,

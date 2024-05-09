@@ -15,6 +15,25 @@ suspend fun UserRepository.validateEmail(email: String?) {
     }
 }
 
+suspend fun UserRepository.validatePasswordByEmail(
+    email: String,
+    password: String,
+): UserData {
+    val storedUser = getUserByEmail(email) ?: run {
+        throw WareHouseException(HttpStatusCode.NotFound, "There is no user with such email")
+    }
+
+    password.ifEmpty {
+        throw WareHouseException(HttpStatusCode.Unauthorized, "Invalid password")
+    }
+
+    if (!password.passwordCheck(storedUser.password ?: "")) {
+        throw WareHouseException(HttpStatusCode.Unauthorized, "Invalid password")
+    }
+
+    return storedUser
+}
+
 suspend fun UserRepository.validatePassword(
     userId: String,
     password: String,

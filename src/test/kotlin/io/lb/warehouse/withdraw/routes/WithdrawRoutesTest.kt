@@ -19,8 +19,7 @@ import io.lb.warehouse.withdraw.data.service.WithdrawDatabaseServiceImpl
 import io.lb.warehouse.withdraw.domain.repository.WithdrawRepository
 import io.lb.warehouse.withdraw.domain.use_cases.CreateWithdrawUseCase
 import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawByIDUseCase
-import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByUserIdUseCase
-import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsByWareIdUseCase
+import io.lb.warehouse.withdraw.domain.use_cases.GetWithdrawsUseCase
 import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -132,30 +131,19 @@ class WithdrawRoutesTest {
     }
 
     @Test
-    fun `Getting by userId with no id param, should return BadRequesst`() = testApplication {
-        setup()
-
-        val response = client.get("/api/withdrawsCreatedByUser") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-    }
-
-    @Test
     fun `Getting by unexistent userId, should return NotFound`() = testApplication {
         val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         setup()
 
-        coEvery { service.getWithdrawsByUserId(userId) } returns listOf()
+        coEvery { service.getWithdraws(userId, null) } returns listOf()
 
-        val response = client.get("/api/withdrawsCreatedByUser") {
+        val response = client.get("/api/withdraws") {
             setupRequest()
             parameter("userId", userId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such user")
+        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such filters")
     }
 
     @Test
@@ -166,7 +154,7 @@ class WithdrawRoutesTest {
 
         setup()
 
-        coEvery { service.getWithdrawsByUserId(userId) } returns listOf(
+        coEvery { service.getWithdraws(userId, null) } returns listOf(
             WithdrawData(
                 uuid = uuid,
                 quantity = 500.0,
@@ -176,7 +164,7 @@ class WithdrawRoutesTest {
             )
         )
 
-        val response = client.get("/api/withdrawsCreatedByUser") {
+        val response = client.get("/api/withdraws") {
             setupRequest()
             parameter("userId", userId)
         }
@@ -185,30 +173,19 @@ class WithdrawRoutesTest {
     }
 
     @Test
-    fun `Getting by wareId with no id param, should return BadRequesst`() = testApplication {
-        setup()
-
-        val response = client.get("/api/withdrawsByWareId") {
-            setupRequest()
-        }
-
-        assertThat(response.status).isEqualTo(HttpStatusCode.BadRequest)
-    }
-
-    @Test
     fun `Getting by unexistent wareId, should return NotFound`() = testApplication {
         val wareId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
         setup()
 
-        coEvery { service.getWithdrawsByWareId(wareId) } returns listOf()
+        coEvery { service.getWithdraws(null, wareId) } returns listOf()
 
-        val response = client.get("/api/withdrawsByWareId") {
+        val response = client.get("/api/withdraws") {
             setupRequest()
             parameter("wareId", wareId)
         }
 
         assertThat(response.status).isEqualTo(HttpStatusCode.NotFound)
-        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such ware")
+        assertThat(response.bodyAsText()).isEqualTo("There are no withdraws for such filters")
     }
 
     @Test
@@ -219,7 +196,7 @@ class WithdrawRoutesTest {
 
         setup()
 
-        coEvery { service.getWithdrawsByWareId(wareId) } returns listOf(
+        coEvery { service.getWithdraws(null, wareId) } returns listOf(
             WithdrawData(
                 uuid = uuid,
                 quantity = 500.0,
@@ -229,7 +206,7 @@ class WithdrawRoutesTest {
             )
         )
 
-        val response = client.get("/api/withdrawsByWareId") {
+        val response = client.get("/api/withdraws") {
             setupRequest()
             parameter("wareId", wareId)
         }
@@ -254,8 +231,7 @@ class WithdrawRoutesTest {
             WithdrawUseCases(
                 createWithdrawUseCase = CreateWithdrawUseCase(get()),
                 getWithdrawByIDUseCase = GetWithdrawByIDUseCase(get()),
-                getWithdrawsByUserIdUseCase = GetWithdrawsByUserIdUseCase(get()),
-                getWithdrawsByWareIdUseCase = GetWithdrawsByWareIdUseCase(get()),
+                getWithdrawsUseCase = GetWithdrawsUseCase(get()),
             )
         }
     }

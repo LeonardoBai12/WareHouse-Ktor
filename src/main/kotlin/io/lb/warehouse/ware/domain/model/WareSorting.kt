@@ -1,4 +1,4 @@
-package io.lb.warehouse.ware.data.model
+package io.lb.warehouse.ware.domain.model
 
 /**
  * Enum class representing the ware kinds of sorting.
@@ -6,9 +6,9 @@ package io.lb.warehouse.ware.data.model
  * @property label The label to be used on API parameters.
  *
  * @property BY_NAME Order by name.
- * @property BY_BRAND Order by name.
- * @property BY_AVAILABLE_QUANTITY Order by name.
- * @property BY_TIMESTAMP Order by name.
+ * @property BY_BRAND Order by brand.
+ * @property BY_AVAILABLE_QUANTITY Order by quantity.
+ * @property BY_TIMESTAMP Order by timestamp.
  */
 enum class WareSorting(val label: String) {
     BY_NAME(label = "name"),

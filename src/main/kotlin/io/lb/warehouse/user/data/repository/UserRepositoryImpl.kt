@@ -30,6 +30,10 @@ class UserRepositoryImpl(
         return service.getUserById(userId)
     }
 
+    override suspend fun getUserByEmail(email: String): UserData? {
+        return service.getUserByEmail(email)
+    }
+
     override suspend fun isEmailAlreadyInUse(email: String): Boolean {
         return service.isEmailAlreadyInUse(email)
     }

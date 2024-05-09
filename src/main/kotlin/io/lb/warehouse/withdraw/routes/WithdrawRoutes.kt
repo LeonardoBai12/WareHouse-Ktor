@@ -12,8 +12,8 @@ import io.ktor.server.routing.routing
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.withdraw.data.model.WithdrawCreateRequest
 import io.lb.warehouse.withdraw.domain.use_cases.WithdrawUseCases
-import java.sql.SQLException
 import org.koin.ktor.ext.inject
+import java.sql.SQLException
 
 /**
  * Extension function with routes related to withdraw operations.

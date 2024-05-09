@@ -48,4 +48,3 @@ interface WareRepository {
      */
     suspend fun deleteWare(id: String): Int
 }
-

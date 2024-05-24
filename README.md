@@ -9,6 +9,10 @@ Warehouse offers the following features:
 * Create, read, update and delete wares.
 * Deposit and withdraw wares, automatically updating their stocks.
 
+## Live Demo (PT-BR)
+
+You can watch a demonstration of the project's features on this [YouTube Video](https://www.youtube.com/watch?v=uiAduxzD53I) (PT-BR).
+
 ## Technologies
 
 The application is built using the following technologies:

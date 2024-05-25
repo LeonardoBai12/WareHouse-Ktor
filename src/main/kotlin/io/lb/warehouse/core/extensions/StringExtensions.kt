@@ -10,3 +10,9 @@ fun String.encrypt(): String? {
 fun String.passwordCheck(encryptedPassword: String): Boolean {
     return BCrypt.checkpw(this, encryptedPassword)
 }
+
+fun String?.isValidEmail(): Boolean {
+    this ?: return false
+    val emailRegex = Regex("^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$")
+    return isNotBlank() && matches(emailRegex)
+}

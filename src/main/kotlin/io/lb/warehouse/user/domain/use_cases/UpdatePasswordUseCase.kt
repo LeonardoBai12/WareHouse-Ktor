@@ -1,6 +1,7 @@
 package io.lb.warehouse.user.domain.use_cases
 
 import io.ktor.http.HttpStatusCode
+import io.lb.warehouse.core.extensions.encrypt
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.user.domain.repository.UserRepository
 import io.lb.warehouse.user.util.validatePassword
@@ -34,7 +35,7 @@ class UpdatePasswordUseCase(
                 "Password must have more than 8 characters."
             )
         }
-
-        repository.updatePassword(userId, newPassword)
+        val hashedPassword = newPassword.encrypt()
+        repository.updatePassword(userId, hashedPassword!!)
     }
 }

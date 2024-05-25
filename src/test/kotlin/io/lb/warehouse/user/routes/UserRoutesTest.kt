@@ -71,6 +71,30 @@ class UserRoutesTest {
     }
 
     @Test
+    fun `Creating user with invalid email, should return Conflict`() = testApplication {
+        setup(bypass = false)
+
+        coEvery { service.isEmailAlreadyInUse(any()) } returns false
+
+        val response = client.post("/api/signUp") {
+            setupRequest()
+            setBody(
+                """
+                {
+                    "userName": "Valid name",
+                    "password": "password",
+                    "email": "testexample.com",
+                    "profilePictureUrl": "http://example.com/pic.jpg"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid email.")
+    }
+
+    @Test
     fun `Creating user there is already an user logged in, should return Conflict`() = testApplication {
         setup(userId = "d5745279-6bbe-4d73-95ae-ba43dbd46b47")
 
@@ -253,6 +277,39 @@ class UserRoutesTest {
 
         assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
         assertThat(response.bodyAsText()).isEqualTo("User must have a name.")
+    }
+
+    @Test
+    fun `Updating user with invalid email, should return Conflict`() = testApplication {
+        val uuid = "d5745279-6bbe-4d73-95ae-ba43dbd46b47"
+
+        setup()
+
+        coEvery { service.isEmailAlreadyInUse(any()) } returns false
+        coEvery { service.getUserById(uuid) } returns UserData(
+            userId = uuid,
+            userName = "oldTestUser",
+            password = "testpassword".encrypt(),
+            email = "testold@example.com"
+        )
+
+        val response = client.put("/api/updateUser") {
+            setupRequest()
+            parameter("userId", uuid)
+            setBody(
+                """
+                {
+                    "userName": "name",
+                    "password": "testpassword",
+                    "email": "testexample.com",
+                    "profilePictureUrl": "http://example.com/pic.jpg"
+                }
+                """.trimIndent()
+            )
+        }
+
+        assertThat(response.status).isEqualTo(HttpStatusCode.Conflict)
+        assertThat(response.bodyAsText()).isEqualTo("Invalid email.")
     }
 
     @Test

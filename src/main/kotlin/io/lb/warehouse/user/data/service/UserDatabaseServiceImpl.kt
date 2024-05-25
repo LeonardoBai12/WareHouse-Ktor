@@ -81,7 +81,7 @@ class UserDatabaseServiceImpl(private val connection: Connection) : UserDatabase
 
     override suspend fun getUserByEmail(email: String): UserData? = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
-        statement.setObject(1, UUID.fromString(email))
+        statement.setObject(1, email)
         val resultSet = statement.executeQuery()
 
         return@withContext if (resultSet.next()) {

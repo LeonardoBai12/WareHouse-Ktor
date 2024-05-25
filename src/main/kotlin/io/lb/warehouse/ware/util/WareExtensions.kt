@@ -40,7 +40,7 @@ fun List<WareData>.getOrderedWares(
 }
 
 /**
- * Retrieves the sorting type of a ware data object based on the specified sorting criteria.
+ * Retrieves the sorting type of ware data object based on the specified sorting criteria.
  *
  * @param sortBy The sorting criteria.
  * @return The sorting type for the ware data object.

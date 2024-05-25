@@ -1,6 +1,7 @@
 package io.lb.warehouse.user.domain.use_cases
 
 import io.ktor.http.HttpStatusCode
+import io.lb.warehouse.core.extensions.isValidEmail
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.user.data.model.UserUpdateRequest
 import io.lb.warehouse.user.domain.repository.UserRepository
@@ -28,6 +29,10 @@ class UpdateUserUseCase(
 
         if (user.userName != null && user.userName.isBlank()) {
             throw WareHouseException(HttpStatusCode.Conflict, "User must have a name.")
+        }
+
+        if (user.email.isValidEmail().not()) {
+            throw WareHouseException(HttpStatusCode.Conflict, "Invalid email.")
         }
 
         val updatedUser = storedUser.copy(

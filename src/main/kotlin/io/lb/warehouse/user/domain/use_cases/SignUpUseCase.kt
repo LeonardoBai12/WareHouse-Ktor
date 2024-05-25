@@ -2,6 +2,7 @@ package io.lb.warehouse.user.domain.use_cases
 
 import io.ktor.http.HttpStatusCode
 import io.lb.warehouse.core.extensions.encrypt
+import io.lb.warehouse.core.extensions.isValidEmail
 import io.lb.warehouse.core.util.WareHouseException
 import io.lb.warehouse.user.data.model.UserCreateRequest
 import io.lb.warehouse.user.data.model.UserData
@@ -28,6 +29,10 @@ class SignUpUseCase(
 
         if (user.userName.isBlank()) {
             throw WareHouseException(HttpStatusCode.Conflict, "User must have a name.")
+        }
+
+        if (user.email.isValidEmail().not()) {
+            throw WareHouseException(HttpStatusCode.Conflict, "Invalid email.")
         }
 
         if (user.password.length < 8) {

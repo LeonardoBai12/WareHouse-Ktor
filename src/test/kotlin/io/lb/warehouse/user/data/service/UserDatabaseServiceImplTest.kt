@@ -224,4 +224,67 @@ class UserDatabaseServiceImplTest : BaseServiceTest(CREATE_TABLE_USER_DATA) {
             preparedStatement.executeUpdate()
         }
     }
+
+    @Test
+    fun `Getting unexistent user by email, should return null`() = runTest {
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+        val email = "example@email.com"
+
+        every {
+            connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
+        } returns preparedStatement
+        every { queryResult.next() } returns false
+
+        val result = service.getUserByEmail(email)
+
+        verify {
+            connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
+            preparedStatement.setObject(1, email)
+            preparedStatement.executeQuery()
+        }
+
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `Getting user by email, should return the correct user`() = runTest {
+        val userId = "75ba8951-d1cd-46cb-bde7-39caa35a8929"
+        val email = "example@email.com"
+
+        every {
+            connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
+        } returns preparedStatement
+        every { queryResult.next() } returns true
+
+        every {
+            queryResult.getString("user_id")
+        } returns userId
+        every {
+            queryResult.getString("user_name")
+        } returns "userName"
+        every {
+            queryResult.getString("password")
+        } returns "password"
+        every {
+            queryResult.getString("email")
+        } returns email
+        every {
+            queryResult.getString("profile_picture")
+        } returns "picture"
+
+        val result = service.getUserByEmail(email)
+
+        verify {
+            connection.prepareStatement(loadQueryFromFile(SELECT_USER_BY_EMAIL))
+            preparedStatement.setObject(1, email)
+            preparedStatement.executeQuery()
+        }
+
+        assertThat(result).isNotNull()
+        assertThat(result?.userId).isEqualTo(userId)
+        assertThat(result?.userName).isEqualTo("userName")
+        assertThat(result?.email).isEqualTo("example@email.com")
+        assertThat(result?.profilePictureUrl).isEqualTo("picture")
+        assertThat(result?.password).isEqualTo("password")
+    }
 }
